@@ -11,7 +11,7 @@ namespace {
    std::atomic<std::optional<std::chrono::high_resolution_clock::time_point>> t1;
 
 
-   auto acquire_and_set_t1() {
+   auto thread_fun() -> void {
       semaphore.acquire();
       const auto time = std::chrono::high_resolution_clock::now();
       t1.store(time);
@@ -19,7 +19,7 @@ namespace {
 
    auto measure() -> double {
       // startup thread
-      std::jthread j(acquire_and_set_t1);
+      std::jthread j(thread_fun);
       std::this_thread::sleep_for(max_threadup_spinup_time);
 
       // Signal thread and time
@@ -27,10 +27,9 @@ namespace {
       semaphore.release();
       std::this_thread::sleep_for(max_thread_write_time);
       
-      const auto tp = t1.load();
-      if (tp.has_value() == false)
+      if (t1.load().has_value() == false)
          std::terminate();
-      const double ns = std::chrono::duration_cast<dbl_ns>(*tp - t0).count();
+      const double ns = std::chrono::duration_cast<dbl_ns>(*t1.load() - t0).count();
 
       t1.store(std::nullopt);
       return ns;
@@ -43,7 +42,7 @@ auto measure_semaphore_latency(const int n) -> void {
    runtimes.reserve(n);
    for (int i = 0; i < n; ++i) {
       if (i % 100 == 0)
-         std::cout << oof::hposition(0) << 100 * i / n << "%";
+         std::cout << 100 * i / n << "% ";
       runtimes.emplace_back(measure());
    }
    std::cout << "\n";
