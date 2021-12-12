@@ -41,7 +41,6 @@ namespace {
    };
 
    atomic_flag_spinlock spinlock;
-   //tas_lock spinlock;
    std::atomic<std::optional<std::chrono::high_resolution_clock::time_point>> t1;
 
    auto thread_fun() -> void {

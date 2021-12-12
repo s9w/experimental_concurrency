@@ -7,7 +7,7 @@
 #include "tools.h"
 
 namespace {
-   std::atomic_flag atomic_flag{  };
+   std::atomic_flag atomic_flag{};
    std::atomic<std::optional<std::chrono::high_resolution_clock::time_point>> t1;
 
 

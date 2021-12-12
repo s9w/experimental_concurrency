@@ -8,10 +8,9 @@
 #include <chrono>
 using namespace std::chrono_literals;
 using dbl_ns = std::chrono::duration<double, std::nano>;
-using dbl_ms = std::chrono::duration<double, std::milli>;
-using dbl_us = std::chrono::duration<double, std::micro>;
 
-constexpr auto max_threadup_spinup_time = 1.5ms;
+
+inline auto max_threadup_spinup_time = 5.0ms;
 constexpr auto max_thread_write_time = 100us;
 
 inline auto report(

@@ -28,7 +28,7 @@ namespace {
       std::this_thread::sleep_for(max_threadup_spinup_time);
       if (t1.load().has_value() == false)
          std::terminate();
-      const double ns = std::chrono::duration_cast<dbl_ns>(*t1.load() - t0).count();
+      result.worker_ns = std::chrono::duration_cast<dbl_ns>(*t1.load() - t0).count();
 
       t1.store(std::nullopt);
       return result;
@@ -43,7 +43,7 @@ auto measure_thread_start(const int n) -> void
    ns_hosting.reserve(n);
    ns_worker.reserve(n);
    for (int i = 0; i < n; ++i) {
-      if (i % 1000 == 0)
+      if (i % 100 == 0)
          std::cout << 100 * i / n << "% ";
       const auto& [hosting, worker] = measure();
       ns_hosting.emplace_back(hosting);
