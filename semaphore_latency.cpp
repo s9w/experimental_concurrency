@@ -8,16 +8,22 @@
 
 namespace {
    std::binary_semaphore semaphore{ 0 };
-   std::atomic<std::optional<std::chrono::high_resolution_clock::time_point>> t1;
+   struct thread_result
+   {
+      std::chrono::high_resolution_clock::time_point t1{};
+      int processor_number{};
+   };
+   std::atomic<std::optional<thread_result>> t1;
 
 
    auto thread_fun() -> void {
       semaphore.acquire();
       const auto time = std::chrono::high_resolution_clock::now();
-      t1.store(time);
+      const auto x = static_cast<int>(GetCurrentProcessorNumber());
+      t1.store(thread_result{ time, x });
    }
 
-   auto measure() -> double {
+   auto measure() -> paired_time {
       // startup thread
       std::jthread j(thread_fun);
       std::this_thread::sleep_for(max_threadup_spinup_time);
@@ -29,16 +35,18 @@ namespace {
       
       if (t1.load().has_value() == false)
          std::terminate();
-      const double ns = std::chrono::duration_cast<dbl_ns>(*t1.load() - t0).count();
+
+      const auto loaded = t1.load();
+      const double ns = std::chrono::duration_cast<dbl_ns>(loaded->t1 - t0).count();
 
       t1.store(std::nullopt);
-      return ns;
+      return paired_time{ static_cast<int>(GetCurrentProcessorNumber()), loaded->processor_number, ns };
    }
 
 }
 
 auto measure_semaphore_latency(const int n) -> void {
-   std::vector<double> runtimes;
+   std::vector<paired_time> runtimes;
    runtimes.reserve(n);
    for (int i = 0; i < n; ++i) {
       if (i % 100 == 0)
