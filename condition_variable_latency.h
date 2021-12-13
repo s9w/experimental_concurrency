@@ -1,3 +1,3 @@
 #pragma once
 
-auto measure_conditionvar_latency(const int n) -> void;
+auto conditionvar_latency(const int n) -> void;

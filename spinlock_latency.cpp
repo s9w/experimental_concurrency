@@ -8,7 +8,7 @@
 
 namespace {
    class atomic_flag_spinlock {
-      std::atomic_flag m_lock = ATOMIC_FLAG_INIT;
+      std::atomic_flag m_lock;
    public:
       void lock() {
          while (m_lock.test(std::memory_order_relaxed))
@@ -36,7 +36,7 @@ namespace {
 
       void unlock() {
          lock_.store(false, std::memory_order_release);
-         //lock_.notify_one();
+         lock_.notify_one();
       }
    };
 
@@ -47,36 +47,27 @@ namespace {
       spinlock.lock();
       const auto time = std::chrono::high_resolution_clock::now();
       t1.store(time);
+      t1.notify_one();
    }
 
-   auto measure() -> double {
+   auto measure() -> result_unit {
       std::jthread j(thread_fun);
       std::this_thread::sleep_for(max_threadup_spinup_time);
 
-      // Signal thread and time
       const auto t0 = std::chrono::high_resolution_clock::now();
       spinlock.unlock();
-      std::this_thread::sleep_for(max_thread_write_time);
-      if (t1.load().has_value() == false)
+      std::this_thread::sleep_for(max_latency);
+      const auto loaded = t1.exchange(std::nullopt);
+      if (loaded.has_value() == false)
          std::terminate();
-      const double ns = std::chrono::duration_cast<dbl_ns>(*t1.load() - t0).count();
-
-      t1.store(std::nullopt);
+      const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(*loaded - t0).count();
       return ns;
    }
 
 }
 
-auto measure_spinlock_latency(const int n) -> void
+auto spinlock_latency(const int n) -> void
 {
    spinlock.lock();
-   std::vector<double> runtimes;
-   runtimes.reserve(n);
-   for (int i = 0; i < n; ++i) {
-      if (i % 100 == 0)
-         std::cout << 100 * i / n << "% ";
-      runtimes.emplace_back(measure());
-   }
-   std::cout << "\n";
-   report(runtimes, "spinlock_latency");
+   just_do_it(n, "spinlock_latency", measure);
 }

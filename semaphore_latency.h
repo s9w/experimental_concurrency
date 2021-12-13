@@ -1,4 +1,4 @@
 #pragma once
 
-auto measure_semaphore_latency(int n) -> void;
+auto semaphore_latency(int n) -> void;
 

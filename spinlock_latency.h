@@ -1,3 +1,3 @@
 #pragma once
 
-auto measure_spinlock_latency(int n) -> void;
+auto spinlock_latency(int n) -> void;
