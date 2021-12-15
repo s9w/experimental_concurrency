@@ -1,8 +1,6 @@
 #include "contention0.h"
 
 #include <atomic>
-#include <latch>
-
 
 #include "tools.h"
 

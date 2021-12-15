@@ -5,15 +5,13 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <latch>
 
 #include <chrono>
 using namespace std::chrono_literals;
 using result_unit = typename std::chrono::nanoseconds::rep;
 
-
-inline auto max_threadup_spinup_time = 5.0ms;
 constexpr int contention_thread_count = 3;
-constexpr auto max_latency = 50us;
 
 struct console_cursor_disabler{
    console_cursor_disabler() { std::cout << "\x1b[?25l";}

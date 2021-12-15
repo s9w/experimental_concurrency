@@ -15,9 +15,10 @@ namespace {
 
    auto measure() -> result_unit {
       const auto t0 = std::chrono::high_resolution_clock::now();
-      std::jthread t(thread_fun);
+      {
+         std::jthread t(thread_fun);
+      }
 
-      std::this_thread::sleep_for(max_threadup_spinup_time);
       const auto loaded = t1.exchange(std::nullopt);
       if (loaded.has_value() == false)
          std::terminate();
