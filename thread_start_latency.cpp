@@ -6,11 +6,11 @@
 
 namespace {
 
-   std::atomic<std::optional<std::chrono::high_resolution_clock::time_point>> t1;
+   easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
 
    auto thread_fun() -> void {
       const auto time = std::chrono::high_resolution_clock::now();
-      t1.store(time);
+      t1_atomic.store_and_notify_one(time);
    }
 
    auto measure() -> result_unit {
@@ -19,11 +19,8 @@ namespace {
          std::jthread t(thread_fun);
       }
 
-      const auto loaded = t1.exchange(std::nullopt);
-      if (loaded.has_value() == false)
-         std::terminate();
-      const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(*loaded - t0).count();
-      return ns;
+
+      return (t1_atomic.wait_for_non_nullopt_and_exchange() - t0).count();
    }
 }
 

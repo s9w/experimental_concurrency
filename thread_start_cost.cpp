@@ -7,7 +7,7 @@
 
 namespace {
 
-   std::atomic<std::optional<std::chrono::high_resolution_clock::time_point>> dummy;
+   std::atomic<std::chrono::high_resolution_clock::time_point> dummy;
 
    auto thread_fun() -> void {
       const auto time = std::chrono::high_resolution_clock::now();

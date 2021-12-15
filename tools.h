@@ -15,24 +15,41 @@ using result_unit = typename std::chrono::nanoseconds::rep;
 constexpr int contention_thread_count = 3;
 constexpr std::optional<std::chrono::high_resolution_clock::time_point> initial_optional_tp{};
 
+// To .wait(), you need a neutral or old value. std::optional<T> is great for this, but easy to
+// use wrong because of the bitwise comparison of atomic::wait(). This wraps this correctly.
 template<typename T>
 struct easy_atomic{
    constexpr static inline auto zero_value = std::optional<T>{};
    std::atomic<std::optional<T>> m_atomic;
 
    constexpr easy_atomic() noexcept : m_atomic(zero_value){}
-   auto wait_for_non_nullopt() const noexcept{
+
+   auto wait_for_non_nullopt() const noexcept -> void{
       m_atomic.wait(zero_value);
    }
-   [[nodiscard]] auto wait_for_non_nullopt_and_exchange(std::memory_order order = std::memory_order_seq_cst) noexcept -> T {
+
+   [[nodiscard]] auto wait_for_non_nullopt_and_exchange(
+      std::memory_order order = std::memory_order_seq_cst
+   ) noexcept -> T
+   {
       m_atomic.wait(zero_value, order);
       return *m_atomic.exchange(zero_value, order);
    }
-   auto store_and_notify_one(T new_value, std::memory_order order = std::memory_order_seq_cst) noexcept -> void{
+
+   auto store_and_notify_one(
+      T new_value,
+      std::memory_order order = std::memory_order_seq_cst
+   ) noexcept -> void
+   {
       m_atomic.store(new_value, order);
       m_atomic.notify_one();
    }
-   auto store_and_notify_all(T new_value, std::memory_order order = std::memory_order_seq_cst) noexcept -> void {
+
+   auto store_and_notify_all(
+      T new_value,
+      std::memory_order order = std::memory_order_seq_cst
+   ) noexcept -> void
+   {
       m_atomic.store(new_value, order);
       m_atomic.notify_all();
    }
