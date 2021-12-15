@@ -12,12 +12,25 @@ using result_unit = typename std::chrono::nanoseconds::rep;
 
 
 inline auto max_threadup_spinup_time = 5.0ms;
+constexpr int contention_thread_count = 3;
 constexpr auto max_latency = 50us;
 
 struct console_cursor_disabler{
    console_cursor_disabler() { std::cout << "\x1b[?25l";}
    ~console_cursor_disabler(){ std::cout << "\x1b[?25h";}
 };
+
+
+[[nodiscard]] inline auto get_percentile(
+   const std::vector<double>& vec,
+   const double percentile
+) -> double
+{
+   std::vector<double> sorted = vec;
+   std::ranges::sort(sorted);
+   const int perc_index = static_cast<int>(percentile / 100.0 * std::size(sorted));
+   return sorted[perc_index];
+}
 
 
 template<typename fun_type>
@@ -36,7 +49,13 @@ auto just_do_it(
             const int percentage = 100 * i / n;
             std::cout << "\x1b[0G" << percentage << "%    ";
          }
-         runtimes.emplace_back(get_measurement());
+         const auto measurement = get_measurement();
+
+         // Skip the first data point
+         if(i==0)
+            continue;
+
+         runtimes.emplace_back(measurement);
       }
    }
    std::cout << "\n";
@@ -51,49 +70,3 @@ auto just_do_it(
       file_writer << std::to_string(value) << "\n";
    std::cout << description << " done\n";
 }
-
-
-//inline auto write_results(
-//   const std::vector<paired_time>& vec,
-//   const char* description
-//) -> void
-//{
-//   std::cout << "written " << description << "\n";
-//   std::string filename = "python/";
-//   filename += description;
-//   filename += ".txt";
-//
-//   std::ofstream filestream(filename);
-//   for (const paired_time& value : vec)
-//      filestream << std::to_string(value.ns) << " " << std::to_string(value.number0) << " " << std::to_string(value.number1) << "\n";
-//}
-//
-//inline auto write_results(
-//   const std::vector<double>& vec,
-//   const char* description
-//) -> void
-//{
-//   std::cout << "written " << description << "\n";
-//   std::string filename = "python/";
-//   filename += description;
-//   filename += ".txt";
-//   
-//   std::ofstream filestream(filename);
-//   for (const double value : vec)
-//      filestream << std::to_string(value) << "\n";
-//}
-//
-//inline auto write_results(
-//   const std::vector<std::pair<double, double>>& vec,
-//   const char* description
-//) -> void
-//{
-//   std::cout << "written " << description << "\n";
-//   std::string filename = "python/";
-//   filename += description;
-//   filename += ".txt";
-//
-//   std::ofstream filestream(filename);
-//   for (const auto& [row0, row1]: vec)
-//      filestream << std::to_string(row0) << " " << row1 << "\n";
-//}
