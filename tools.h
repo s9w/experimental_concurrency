@@ -31,13 +31,23 @@ struct console_cursor_disabler{
 }
 
 
+inline auto goto_horizontal(int pos) -> std::string
+{
+   std::string msg = "\x1b[";
+   msg += std::to_string(pos);
+   msg += "G";
+   return msg;
+}
+
 template<typename fun_type>
 auto just_do_it(
    const int n,
-   const char* description,
+   const std::string& description,
    const fun_type& get_measurement
 ) -> void
 {
+   std::cout << description << ":";
+   const int progress_pos = static_cast<int>(description.size()) + 3;
    std::vector<result_unit> runtimes;
    runtimes.reserve(n);
    {
@@ -45,7 +55,7 @@ auto just_do_it(
       for (int i = 0; i < n; ++i) {
          if (i % 100 == 0) {
             const int percentage = 100 * i / n;
-            std::cout << "\x1b[0G" << percentage << "%    ";
+            std::cout << goto_horizontal(progress_pos) << percentage << "%    ";
          }
          const auto measurement = get_measurement();
 
@@ -56,7 +66,6 @@ auto just_do_it(
          runtimes.emplace_back(measurement);
       }
    }
-   std::cout << "\n";
 
    // Result writing
    std::string filename = "python/";
@@ -66,5 +75,5 @@ auto just_do_it(
    std::ofstream file_writer(filename);
    for (const result_unit value : runtimes)
       file_writer << std::to_string(value) << "\n";
-   std::cout << description << " done\n";
+   std::cout << goto_horizontal(progress_pos) << "done\n";
 }
