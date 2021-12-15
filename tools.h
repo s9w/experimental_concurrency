@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -12,6 +13,30 @@ using namespace std::chrono_literals;
 using result_unit = typename std::chrono::nanoseconds::rep;
 
 constexpr int contention_thread_count = 3;
+constexpr std::optional<std::chrono::high_resolution_clock::time_point> initial_optional_tp{};
+
+template<typename T>
+struct easy_atomic{
+   constexpr static inline auto zero_value = std::optional<T>{};
+   std::atomic<std::optional<T>> m_atomic;
+
+   constexpr easy_atomic() noexcept : m_atomic(zero_value){}
+   auto wait_for_non_nullopt() const noexcept{
+      m_atomic.wait(zero_value);
+   }
+   [[nodiscard]] auto wait_for_non_nullopt_and_exchange(std::memory_order order = std::memory_order_seq_cst) noexcept -> T {
+      m_atomic.wait(zero_value, order);
+      return *m_atomic.exchange(zero_value, order);
+   }
+   auto store_and_notify_one(T new_value, std::memory_order order = std::memory_order_seq_cst) noexcept -> void{
+      m_atomic.store(new_value, order);
+      m_atomic.notify_one();
+   }
+   auto store_and_notify_all(T new_value, std::memory_order order = std::memory_order_seq_cst) noexcept -> void {
+      m_atomic.store(new_value, order);
+      m_atomic.notify_all();
+   }
+};
 
 struct console_cursor_disabler{
    console_cursor_disabler() { std::cout << "\x1b[?25l";}

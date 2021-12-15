@@ -1,33 +1,32 @@
-#include "atomic_flag_test_latency.h"
+#include "unique_lock_latency.h"
 
-#include <atomic>
+#include <mutex>
 
 #include "tools.h"
+
 
 namespace {
    std::atomic_flag ready_signal;
    easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
 
-   std::atomic_flag atomic_flag{}; // false/clear init
-   
+   std::mutex mutex;
 
    auto thread_fun() -> void {
       ready_signal.test_and_set();
       ready_signal.notify_one();
 
-      atomic_flag.wait(false);
+      std::unique_lock<std::mutex> lk(mutex);
       const auto time = std::chrono::high_resolution_clock::now();
       t1_atomic.store_and_notify_one(time);
-      atomic_flag.clear();
    }
 
    auto measure() -> result_unit {
+      mutex.lock();
       std::jthread j(thread_fun);
       ready_signal.wait(false);
 
       const auto t0 = std::chrono::high_resolution_clock::now();
-      atomic_flag.test_and_set();
-      atomic_flag.notify_one();
+      mutex.unlock();
 
       ready_signal.clear();
       return (t1_atomic.wait_for_non_nullopt_and_exchange() - t0).count();
@@ -35,8 +34,7 @@ namespace {
 
 }
 
-
-auto atomic_flag_test_latency(const int n) -> void
+auto unique_lock_latency(const int n) -> void
 {
-   just_do_it(n, "atomic_flag_test_latency", measure);
+   just_do_it(n, "unique_lock_latency", measure);
 }
