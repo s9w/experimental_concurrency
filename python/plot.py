@@ -36,10 +36,11 @@ def print_metrics(in_fn, data_us):
 
 def get_cdf(sorted_us, max_x_range):
     x = sorted_us
-    y = 100.0 * np.arange(len(sorted_us)) / float(len(sorted_us))
+    y = 100.0 * (np.arange(len(sorted_us))+1) / float(len(sorted_us))
 
     # x values are many times in the data, make things unique
-    new_x, indices = np.unique(x, return_index=True)
+    new_x, indices, counts = np.unique(x, return_index=True, return_counts=True)
+    indices = indices+(counts-1) # get the last indices (ie biggest values)
     new_y = y[indices]
 
     new_x = np.insert(new_x, 0, 0.0)
