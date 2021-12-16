@@ -1,4 +1,4 @@
-#include "atomic_flag_test_latency.h"
+#include "atomic_flag_clear_latency.h"
 
 #include "tools.h"
 

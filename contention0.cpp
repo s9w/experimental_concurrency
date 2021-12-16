@@ -47,6 +47,6 @@ namespace
 
 auto contention0(const int n) -> void
 {
-   just_do_it(n, "contention0", []() {return measure( 1000); });
+   just_do_it(n, "contention_atomic", []() {return measure( 1000); });
 }
 

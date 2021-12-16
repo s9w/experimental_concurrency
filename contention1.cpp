@@ -43,6 +43,7 @@ namespace
       const auto t0 = std::chrono::high_resolution_clock::now();
       start_signal.test_and_set();
       start_signal.notify_all();
+
       end_signal.wait();
       const auto t1 = std::chrono::high_resolution_clock::now();
       const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
@@ -55,5 +56,5 @@ namespace
 
 auto contention1(const int n) -> void
 {
-   just_do_it(n, "contention1", [](){return measure( 1000); });
+   just_do_it(n, "contention_mutex", [](){return measure( 1000); });
 }

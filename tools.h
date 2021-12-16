@@ -15,8 +15,8 @@ using result_unit = typename std::chrono::nanoseconds::rep;
 constexpr int contention_thread_count = 3;
 constexpr std::optional<std::chrono::high_resolution_clock::time_point> initial_optional_tp{};
 
-// To .wait(), you need a neutral or old value. std::optional<T> is great for this, but easy to
-// use wrong because of the bitwise comparison of atomic::wait(). This wraps this correctly.
+// To std::atomic::wait(), you need a neutral or old value. std::optional<T> is great for this,
+// but easy to use wrong because of the bitwise comparison. This wraps this correctly.
 template<typename T>
 struct easy_atomic{
    constexpr static inline auto zero_value = std::optional<T>{};
@@ -61,25 +61,20 @@ struct console_cursor_disabler{
 };
 
 
-[[nodiscard]] inline auto get_percentile(
-   const std::vector<double>& vec,
-   const double percentile
-) -> double
-{
-   std::vector<double> sorted = vec;
-   std::ranges::sort(sorted);
-   const int perc_index = static_cast<int>(percentile / 100.0 * std::size(sorted));
-   return sorted[perc_index];
-}
+[[nodiscard]] auto get_percentile(const std::vector<double>& vec, double percentile) -> double;
+[[nodiscard]] auto goto_horizontal(int pos) -> std::string;
 
 
-inline auto goto_horizontal(int pos) -> std::string
-{
-   std::string msg = "\x1b[";
-   msg += std::to_string(pos);
-   msg += "G";
-   return msg;
-}
+struct progress_reporter{
+   int m_progress = 0;
+   int m_max = 0;
+   std::optional<std::chrono::high_resolution_clock::time_point> m_last_report{};
+
+   progress_reporter(const int max) : m_max(max) {}
+   auto increase() -> void{ ++m_progress; }
+   auto get_percent() -> std::optional<std::string>;
+};
+
 
 template<typename fun_type>
 auto just_do_it(
@@ -88,18 +83,18 @@ auto just_do_it(
    const fun_type& get_measurement
 ) -> void
 {
+   console_cursor_disabler no_cursor;
    std::cout << description << ":";
    const int progress_pos = static_cast<int>(description.size()) + 3;
    std::vector<result_unit> runtimes;
    runtimes.reserve(n);
    {
-      console_cursor_disabler no_cursor;
+      progress_reporter reporter(n);
       for (int i = 0; i < n; ++i) {
-         if (i % 100 == 0) {
-            const int percentage = 100 * i / n;
-            std::cout << goto_horizontal(progress_pos) << percentage << "%    ";
-         }
+         if (const auto rep = reporter.get_percent(); rep.has_value())
+            std::cout << goto_horizontal(progress_pos) << *rep;
          const auto measurement = get_measurement();
+         reporter.increase();
 
          // Skip the first data point
          if(i==0)
