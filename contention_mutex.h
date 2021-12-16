@@ -1,4 +1,4 @@
 #pragma once
 
-auto contention1(int n) -> void;
+auto contention_mutex(int n) -> void;
 auto contention1_grid() -> void;

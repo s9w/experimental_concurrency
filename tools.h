@@ -12,8 +12,7 @@
 using namespace std::chrono_literals;
 using result_unit = typename std::chrono::nanoseconds::rep;
 
-constexpr int contention_thread_count = 3;
-constexpr std::optional<std::chrono::high_resolution_clock::time_point> initial_optional_tp{};
+static const int contention_thread_count = static_cast<int>(std::thread::hardware_concurrency())/2 - 1;
 
 // To std::atomic::wait(), you need a neutral or old value. std::optional<T> is great for this,
 // but easy to use wrong because of the bitwise comparison. This wraps this correctly.

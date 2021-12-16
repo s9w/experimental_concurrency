@@ -28,7 +28,7 @@ def print_metrics(in_fn, data_us):
     perc_99 = np.percentile(data_us, 99.0)
     perc_999 = np.percentile(data_us, 99.9)
     print(
-        "{:<27} avg {:>7.1f} 99th {:>7.1f} ({:>4.1f}x), 99.9th {:>7.1f} ({:>4.1f}x) med: {:.1f}".format(
+        "{:<28} avg {:>8.2f} 99th {:>8.2f} ({:>4.1f}x), 99.9th {:>8.2f} ({:>4.1f}x) med: {:.1f}".format(
             in_fn, avg, perc_99, perc_99/avg, perc_999, perc_999/avg, np.median(data_us)
         )
     )
@@ -93,11 +93,14 @@ stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
 
 stacked_hist("semaphore_latency")
 stacked_hist("raw_mutex_lock_latency")
+stacked_hist("mutex_lock_unlock_latency_st")
 stacked_hist("unique_lock_latency")
 stacked_hist("atomic_flag_test_latency")
 stacked_hist("atomic_flag_clear_latency")
 stacked_hist("spinlock_latency")
 
-stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=200, xlabel="Duration")
+stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
+
+stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=1.0)
 
 stacked_hist("minimum_sleep", max_x_range=5500)

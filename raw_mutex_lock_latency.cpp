@@ -14,10 +14,10 @@ namespace {
       ready_signal.test_and_set();
       ready_signal.notify_one();
 
-      mutex.lock();
+      std::scoped_lock lock(mutex);
+      
       const auto time = std::chrono::high_resolution_clock::now();
       t1_atomic.store_and_notify_one(time);
-      mutex.unlock(); // Same thread needs to unlock
    }
 
    auto measure() -> result_unit {
