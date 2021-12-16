@@ -1,3 +1,5 @@
 #pragma once
 
-auto thread_start_cost(int n) -> void;
+#include "tools.h"
+
+auto thread_start_cost(serialize_type& data, int n) -> void;

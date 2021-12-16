@@ -25,7 +25,7 @@ namespace {
 }
 
 
-auto thread_start_latency(const int n) -> void
+auto thread_start_latency(serialize_type& data, const int n) -> void
 {
-   just_do_it(n, "thread_start_latency", measure);
+   add_serialization_part(data, measure, n, "thread_start_latency");
 }

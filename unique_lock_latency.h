@@ -1,3 +1,5 @@
 #pragma once
 
-auto unique_lock_latency(const int n) -> void;
+#include "tools.h"
+
+auto unique_lock_latency(serialize_type& data, const int n) -> void;

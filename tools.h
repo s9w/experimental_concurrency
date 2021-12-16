@@ -7,6 +7,7 @@
 #include <thread>
 #include <vector>
 #include <latch>
+#include <map>
 
 #include <chrono>
 using namespace std::chrono_literals;
@@ -75,41 +76,86 @@ struct progress_reporter{
 };
 
 
+using serialize_type = std::map<std::string, std::vector<result_unit>>;
+
 template<typename fun_type>
-auto just_do_it(
+auto get_values(
+   const fun_type& fun,
    const int n,
-   const std::string& description,
-   const fun_type& get_measurement
-) -> void
+   const std::string& description
+) -> std::vector<result_unit>
 {
    console_cursor_disabler no_cursor;
    std::cout << description << ":";
    const int progress_pos = static_cast<int>(description.size()) + 3;
-   std::vector<result_unit> runtimes;
-   runtimes.reserve(n);
-   {
-      progress_reporter reporter(n);
-      for (int i = 0; i < n; ++i) {
-         if (const auto rep = reporter.get_percent(); rep.has_value())
-            std::cout << goto_horizontal(progress_pos) << *rep;
-         const auto measurement = get_measurement();
-         reporter.increase();
 
-         // Skip the first data point
-         if(i==0)
-            continue;
+   std::vector<result_unit> values;
+   values.reserve(n);
+   progress_reporter reporter(n);
+   for (int i = 0; i < n; ++i) {
+      if (const auto rep = reporter.get_percent(); rep.has_value())
+         std::cout << goto_horizontal(progress_pos) << *rep;
+      const auto measurement = fun();
+      reporter.increase();
 
-         runtimes.emplace_back(measurement);
-      }
+      // Skip the first data point
+      if (i == 0)
+         continue;
+
+      values.emplace_back(measurement);
    }
-
-   // Result writing
-   std::string filename = "python/";
-   filename += description;
-   filename += ".txt";
-
-   std::ofstream file_writer(filename);
-   for (const result_unit value : runtimes)
-      file_writer << std::to_string(value) << "\n";
    std::cout << goto_horizontal(progress_pos) << "done\n";
+   return values;
 }
+
+
+template<typename fun_type>
+auto add_serialization_part(
+   serialize_type& data,
+   const fun_type& fun,
+   const int n,
+   const std::string& description
+) -> void
+{
+   data.emplace(description, get_values(fun, n, description));
+}
+
+
+// template<typename fun_type>
+// auto just_do_it(
+//    const int n,
+//    const std::string& description,
+//    const fun_type& get_measurement
+// ) -> void
+// {
+//    console_cursor_disabler no_cursor;
+//    std::cout << description << ":";
+//    const int progress_pos = static_cast<int>(description.size()) + 3;
+//    std::vector<result_unit> runtimes;
+//    runtimes.reserve(n);
+//    {
+//       progress_reporter reporter(n);
+//       for (int i = 0; i < n; ++i) {
+//          if (const auto rep = reporter.get_percent(); rep.has_value())
+//             std::cout << goto_horizontal(progress_pos) << *rep;
+//          const auto measurement = get_measurement();
+//          reporter.increase();
+//
+//          // Skip the first data point
+//          if(i==0)
+//             continue;
+//
+//          runtimes.emplace_back(measurement);
+//       }
+//    }
+//
+//    // Result writing
+//    std::string filename = "python/";
+//    filename += description;
+//    filename += ".txt";
+//
+//    std::ofstream file_writer(filename);
+//    for (const result_unit value : runtimes)
+//       file_writer << std::to_string(value) << "\n";
+//    std::cout << goto_horizontal(progress_pos) << "done\n";
+// }

@@ -36,7 +36,7 @@ namespace {
 }
 
 
-auto atomic_flag_test_latency(const int n) -> void
+auto atomic_flag_test_latency(serialize_type& data, const int n) -> void
 {
-   just_do_it(n, "atomic_flag_test_latency", measure);
+   add_serialization_part(data, measure, n, "atomic_flag_test_latency");
 }

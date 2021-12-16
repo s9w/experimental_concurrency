@@ -44,8 +44,8 @@ namespace
 }
 
 
-auto contention_atomic(const int n) -> void
+auto contention_atomic(serialize_type& data, const int n) -> void
 {
-   just_do_it(n, "contention_atomic", []() {return measure( 1000); });
+   add_serialization_part(data, []() {return measure(1000); }, n, "contention_atomic");
 }
 

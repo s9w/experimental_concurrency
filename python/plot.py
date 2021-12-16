@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import json
+
+j = json.load(open("json_out.txt"))
+
 
 def get_title(filename):
     lookup_map = {
@@ -62,8 +66,8 @@ def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Latency"):
     fig = plt.figure(figsize=(5, 3))
     ax = fig.add_subplot(111)
 
-    sorted_us_datas = [np.sort(np.loadtxt(in_fn+".txt", usecols=[0]) / 1000.0) for in_fn in filenames]
-    max_x_range = max_x_range or np.max(np.percentile(sorted_us_datas, 99.0))
+    sorted_us_datas = [np.sort(j[in_fn])/1000.0 for in_fn in filenames]
+    max_x_range = max_x_range or np.max(np.percentile(sorted_us_datas, 99.0, interpolation="higher"))
 
     for in_fn, data_us in zip(filenames, sorted_us_datas):
         x, y = get_cdf(data_us, max_x_range)
@@ -90,6 +94,7 @@ def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Latency"):
     fig.savefig(out_fn, dpi=100)
 
 
+
 stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
 
 stacked_hist("semaphore_latency")
@@ -102,6 +107,10 @@ stacked_hist("spinlock_latency")
 
 stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
 
-stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=1.0)
+stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=0.2)
 
-stacked_hist("minimum_sleep", max_x_range=5500)
+# stacked_hist("minimum_sleep", max_x_range=5500)
+
+for key, value in j.items():
+    if len(value) == 1:
+        print(key, value)

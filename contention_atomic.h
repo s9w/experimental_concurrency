@@ -1,4 +1,5 @@
 #pragma once
 
-auto contention_atomic(int n) -> void;
-auto contention0_grid() -> void;
+#include "tools.h"
+
+auto contention_atomic(serialize_type& data, int n) -> void;

@@ -1,4 +1,5 @@
 #pragma once
 
-auto contention_mutex(int n) -> void;
-auto contention1_grid() -> void;
+#include "tools.h"
+
+auto contention_mutex(serialize_type& data, int n) -> void;

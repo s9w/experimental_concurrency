@@ -1,4 +1,6 @@
 #pragma once
 
-auto minimum_sleep(int n) -> void;
+#include "tools.h"
+
+auto minimum_sleep(serialize_type& data, int n) -> void;
 

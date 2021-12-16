@@ -34,7 +34,7 @@ namespace {
 
 }
 
-auto unique_lock_latency(const int n) -> void
+auto unique_lock_latency(serialize_type& data, const int n) -> void
 {
-   just_do_it(n, "unique_lock_latency", measure);
+   add_serialization_part(data, measure, n, "unique_lock_latency");
 }

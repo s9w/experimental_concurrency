@@ -5,12 +5,11 @@
 #include "tools.h"
 
 namespace {
-   easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
 
    auto measure() -> result_unit {
       std::mutex mutex; // unlocked initially
       mutex.lock();
-      constexpr int n = 10000;
+      constexpr int n = 10'000;
 
       const auto t0 = std::chrono::high_resolution_clock::now();
       for(int i=0; i<n; ++i){
@@ -25,6 +24,6 @@ namespace {
 
 }
 
-auto mutex_lock_unlock_latency_st(const int n) -> void {
-   just_do_it(n, "mutex_lock_unlock_latency_st", measure);
+auto mutex_lock_unlock_latency_st(serialize_type& data, const int n) -> void {
+   add_serialization_part(data, measure, n, "mutex_lock_unlock_latency_st");
 }

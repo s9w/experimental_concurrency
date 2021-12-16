@@ -35,6 +35,6 @@ namespace {
 
 }
 
-auto raw_mutex_lock_latency(const int n) -> void {
-   just_do_it(n, "raw_mutex_lock_latency", measure);
+auto raw_mutex_lock_latency(serialize_type& data, const int n) -> void {
+   add_serialization_part(data, measure, n, "raw_mutex_lock_latency");
 }

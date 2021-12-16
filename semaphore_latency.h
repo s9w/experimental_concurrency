@@ -1,4 +1,7 @@
 #pragma once
 
-auto semaphore_latency(int n) -> void;
+#include "tools.h"
+
+
+auto semaphore_latency(serialize_type& data, int n) -> void;
 

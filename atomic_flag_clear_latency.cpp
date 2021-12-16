@@ -34,8 +34,8 @@ namespace {
 } // namespace {}
 
 
-auto atomic_flag_clear_latency(const int n) -> void
+auto atomic_flag_clear_latency(serialize_type& data, const int n) -> void
 {
    atomic_flag.test_and_set();
-   just_do_it(n, "atomic_flag_clear_latency", measure);
+   add_serialization_part(data, measure, n, "atomic_flag_clear_latency");
 }

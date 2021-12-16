@@ -1,3 +1,5 @@
 #pragma once
 
-auto spinlock_latency(int n) -> void;
+#include "tools.h"
+
+auto spinlock_latency(serialize_type& data, int n) -> void;

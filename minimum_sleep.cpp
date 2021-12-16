@@ -15,6 +15,6 @@ namespace {
 
 }
 
-auto minimum_sleep(const int n) -> void {
-   just_do_it(n, "minimum_sleep", measure);
+auto minimum_sleep(serialize_type& data, const int n) -> void {
+   add_serialization_part(data, measure, n, "minimum_sleep");
 }
