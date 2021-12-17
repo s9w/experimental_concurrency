@@ -70,5 +70,5 @@ namespace {
 auto spinlock_latency(serialize_type& data, const int n) -> void
 {
    spinlock.lock();
-   add_serialization_part(data, measure, n, "spinlock_latency");
+   add_payload(data, measure, n, "spinlock_latency");
 }

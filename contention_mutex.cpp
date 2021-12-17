@@ -64,7 +64,7 @@ namespace
 
 auto contention_mutex(serialize_type& data, const int n) -> void
 {
-   add_serialization_part(data, []() {return measure(1000); }, n, "contention_mutex");
+   add_payload(data, []() {return measure(1000); }, n, "contention_mutex");
    std::cout << "same_ratio: " << 100.0 * same_ids / (same_ids + different_ids) << "\n";
    std::cout << "changes: " << different_ids << "\n";
 }

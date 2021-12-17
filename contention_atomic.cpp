@@ -46,6 +46,6 @@ namespace
 
 auto contention_atomic(serialize_type& data, const int n) -> void
 {
-   add_serialization_part(data, []() {return measure(1000); }, n, "contention_atomic");
+   add_payload(data, []() {return measure(1000); }, n, "contention_atomic");
 }
 

@@ -34,5 +34,5 @@ namespace {
 
 auto semaphore_latency(serialize_type& data, const int n) -> void
 {
-   add_serialization_part(data, measure, n, "semaphore_latency");
+   add_payload(data, measure, n, "semaphore_latency");
 }

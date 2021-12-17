@@ -1,13 +1,12 @@
 #pragma once
 
 #include <atomic>
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
 #include <latch>
-#include <map>
+#include <unordered_map>
 
 #include <chrono>
 using namespace std::chrono_literals;
@@ -23,37 +22,12 @@ struct easy_atomic{
    std::atomic<std::optional<T>> m_atomic;
 
    constexpr easy_atomic() noexcept : m_atomic(zero_value){}
-
-   auto wait_for_non_nullopt() const noexcept -> void{
-      m_atomic.wait(zero_value);
-   }
-
-   [[nodiscard]] auto wait_for_non_nullopt_and_exchange(
-      std::memory_order order = std::memory_order_seq_cst
-   ) noexcept -> T
-   {
-      m_atomic.wait(zero_value, order);
-      return *m_atomic.exchange(zero_value, order);
-   }
-
-   auto store_and_notify_one(
-      T new_value,
-      std::memory_order order = std::memory_order_seq_cst
-   ) noexcept -> void
-   {
-      m_atomic.store(new_value, order);
-      m_atomic.notify_one();
-   }
-
-   auto store_and_notify_all(
-      T new_value,
-      std::memory_order order = std::memory_order_seq_cst
-   ) noexcept -> void
-   {
-      m_atomic.store(new_value, order);
-      m_atomic.notify_all();
-   }
+   auto wait_for_non_nullopt() const noexcept -> void;
+   [[nodiscard]] auto wait_for_non_nullopt_and_exchange(std::memory_order order = std::memory_order_seq_cst) noexcept -> T;
+   auto store_and_notify_one(T new_value, std::memory_order order = std::memory_order_seq_cst) noexcept -> void;
+   auto store_and_notify_all(T new_value, std::memory_order order = std::memory_order_seq_cst) noexcept -> void;
 };
+
 
 struct console_cursor_disabler{
    console_cursor_disabler() { std::cout << "\x1b[?25l";}
@@ -61,101 +35,41 @@ struct console_cursor_disabler{
 };
 
 
-[[nodiscard]] auto get_percentile(const std::vector<double>& vec, double percentile) -> double;
-[[nodiscard]] auto goto_horizontal(int pos) -> std::string;
+[[nodiscard]] auto get_horizontal_pos_str(int pos) -> std::string;
 
 
 struct progress_reporter{
    int m_progress = 0;
    int m_max = 0;
    std::optional<std::chrono::high_resolution_clock::time_point> m_last_report{};
+   int m_progress_pos{};
+   console_cursor_disabler no_cursor;
 
-   progress_reporter(const int max) : m_max(max) {}
-   auto increase() -> void{ ++m_progress; }
-   auto get_percent() -> std::optional<std::string>;
+   explicit progress_reporter(const std::string& description, int max);
+   ~progress_reporter();
+   auto report() -> void;
+   [[nodiscard]] auto get_percent() -> std::optional<std::string>;
 };
 
 
-using serialize_type = std::map<std::string, std::vector<result_unit>>;
+using serialize_type = std::unordered_map<std::string, std::vector<result_unit>>;
 
 template<typename fun_type>
-auto get_values(
-   const fun_type& fun,
-   const int n,
-   const std::string& description
-) -> std::vector<result_unit>
-{
-   console_cursor_disabler no_cursor;
-   std::cout << description << ":";
-   const int progress_pos = static_cast<int>(description.size()) + 3;
-
-   std::vector<result_unit> values;
-   values.reserve(n);
-   progress_reporter reporter(n);
-   for (int i = 0; i < n; ++i) {
-      if (const auto rep = reporter.get_percent(); rep.has_value())
-         std::cout << goto_horizontal(progress_pos) << *rep;
-      const auto measurement = fun();
-      reporter.increase();
-
-      // Skip the first data point
-      if (i == 0)
-         continue;
-
-      values.emplace_back(measurement);
-   }
-   std::cout << goto_horizontal(progress_pos) << "done\n";
-   return values;
-}
-
-
-template<typename fun_type>
-auto add_serialization_part(
+auto add_payload(
    serialize_type& data,
    const fun_type& fun,
    const int n,
    const std::string& description
 ) -> void
 {
-   data.emplace(description, get_values(fun, n, description));
+   std::vector<result_unit> payload;
+   payload.reserve(n);
+   progress_reporter reporter(description, n);
+   for (int i = 0; i < n; ++i) {
+      reporter.report();
+      payload.emplace_back(fun());
+   }
+
+   data.emplace(description, std::move(payload));
 }
 
-
-// template<typename fun_type>
-// auto just_do_it(
-//    const int n,
-//    const std::string& description,
-//    const fun_type& get_measurement
-// ) -> void
-// {
-//    console_cursor_disabler no_cursor;
-//    std::cout << description << ":";
-//    const int progress_pos = static_cast<int>(description.size()) + 3;
-//    std::vector<result_unit> runtimes;
-//    runtimes.reserve(n);
-//    {
-//       progress_reporter reporter(n);
-//       for (int i = 0; i < n; ++i) {
-//          if (const auto rep = reporter.get_percent(); rep.has_value())
-//             std::cout << goto_horizontal(progress_pos) << *rep;
-//          const auto measurement = get_measurement();
-//          reporter.increase();
-//
-//          // Skip the first data point
-//          if(i==0)
-//             continue;
-//
-//          runtimes.emplace_back(measurement);
-//       }
-//    }
-//
-//    // Result writing
-//    std::string filename = "python/";
-//    filename += description;
-//    filename += ".txt";
-//
-//    std::ofstream file_writer(filename);
-//    for (const result_unit value : runtimes)
-//       file_writer << std::to_string(value) << "\n";
-//    std::cout << goto_horizontal(progress_pos) << "done\n";
-// }

@@ -37,5 +37,5 @@ namespace {
 auto atomic_flag_clear_latency(serialize_type& data, const int n) -> void
 {
    atomic_flag.test_and_set();
-   add_serialization_part(data, measure, n, "atomic_flag_clear_latency");
+   add_payload(data, measure, n, "atomic_flag_clear_latency");
 }

@@ -25,5 +25,5 @@ namespace {
 }
 
 auto mutex_lock_unlock_latency_st(serialize_type& data, const int n) -> void {
-   add_serialization_part(data, measure, n, "mutex_lock_unlock_latency_st");
+   add_payload(data, measure, n, "mutex_lock_unlock_latency_st");
 }

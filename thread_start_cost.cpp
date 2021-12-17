@@ -27,5 +27,5 @@ namespace {
 
 auto thread_start_cost(serialize_type& data, const int n) -> void
 {
-   add_serialization_part(data, measure, n, "thread_start_cost");
+   add_payload(data, measure, n, "thread_start_cost");
 }

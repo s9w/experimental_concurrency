@@ -55,7 +55,7 @@ def get_cdf(sorted_us, max_x_range):
     return new_x, new_y
     
 
-def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Latency"):
+def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Time"):
     if type(filenames) is not list:
         filenames = [filenames]
         if fn is None:
@@ -66,7 +66,7 @@ def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Latency"):
     fig = plt.figure(figsize=(5, 3))
     ax = fig.add_subplot(111)
 
-    sorted_us_datas = [np.sort(j[in_fn])/1000.0 for in_fn in filenames]
+    sorted_us_datas = [np.sort(j[in_fn][1:])/1000.0 for in_fn in filenames]
     max_x_range = max_x_range or np.max(np.percentile(sorted_us_datas, 99.0, interpolation="higher"))
 
     for in_fn, data_us in zip(filenames, sorted_us_datas):
@@ -74,7 +74,6 @@ def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Latency"):
         ax.plot(x, y, label=get_title(in_fn))
         print_metrics(in_fn, data_us)
     
-    # ax.set_xscale('log')
     ax.set_yticks([0.0, 50.0, 90.0, 95.0, 100.0])
     ax.set_yticklabels([str(label)+"%" for label in ax.get_yticks().tolist()])
 
