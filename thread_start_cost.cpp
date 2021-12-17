@@ -14,7 +14,7 @@ namespace {
       dummy.store(time);
    }
 
-   auto measure() -> result_unit {
+   auto measure() -> curry::result_unit {
       const auto t0 = std::chrono::high_resolution_clock::now();
       std::jthread t(thread_fun);
       const auto t1 = std::chrono::high_resolution_clock::now();
@@ -25,7 +25,7 @@ namespace {
 }
 
 
-auto thread_start_cost(serialize_type& data, const int n) -> void
+auto curry::thread_start_cost(serialize_type& data, const int n) -> void
 {
    add_payload(data, measure, n, "thread_start_cost");
 }

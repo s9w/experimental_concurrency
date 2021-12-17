@@ -20,12 +20,14 @@ def get_title(filename):
         return filename
     return lookup_map[filename]
 
+
 def nuke_axes(ax):
     ax.spines["bottom"].set_visible(False)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.spines["left"].set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
+
 
 def print_metrics(in_fn, data_us):
     avg = np.average(data_us)
@@ -93,20 +95,41 @@ def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Time"):
     fig.savefig(out_fn, dpi=100)
 
 
+def plot_heatmap():
+    fig = plt.figure(figsize=(5, 4))
+    ax = fig.add_subplot(111)
+    core_count = int(np.sqrt(len(j["thread_map"])))
+    m = np.zeros(shape=(core_count, core_count))
 
-stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
+    for i, ns in enumerate(j["thread_map"]):
+        x = i % core_count
+        y = i // core_count
+        m[y, x] = ns/1000.0
+    m = np.maximum(m, np.transpose(m))
+    c = ax.imshow(m, cmap ='Greens')
+    ax.set_xticks(range(core_count))
+    ax.set_yticks(range(core_count))
+    ax.xaxis.set_label_position('top') 
 
-stacked_hist("semaphore_latency")
-stacked_hist("raw_mutex_lock_latency")
-stacked_hist("mutex_lock_unlock_latency_st")
-stacked_hist("unique_lock_latency")
-stacked_hist("atomic_flag_test_latency")
-stacked_hist("atomic_flag_clear_latency")
-stacked_hist("spinlock_latency")
+    ax.set_xlabel("Core A")
+    ax.set_ylabel("Core B")
+    ax.xaxis.tick_top()
 
-stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
+    plt.colorbar(c, label="Atomic latency between core A and core B [µs]")
+    fig.tight_layout()
+    fig.savefig("heatmap.png", dpi=100)
 
-stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=0.2)
+plot_heatmap()
+# stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
+# stacked_hist("semaphore_latency")
+# stacked_hist("raw_mutex_lock_latency")
+# stacked_hist("mutex_lock_unlock_latency_st")
+# stacked_hist("unique_lock_latency")
+# stacked_hist("atomic_flag_test_latency")
+# stacked_hist("atomic_flag_clear_latency")
+# stacked_hist("spinlock_latency")
+# stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
+# stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=0.2)
 
 # stacked_hist("minimum_sleep", max_x_range=5500)
 

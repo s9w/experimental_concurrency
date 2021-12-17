@@ -6,6 +6,8 @@
 
 namespace
 {
+   using namespace curry;
+
    std::atomic_flag start_signal;
    std::atomic<int> atomic;
 
@@ -44,7 +46,7 @@ namespace
 }
 
 
-auto contention_atomic(serialize_type& data, const int n) -> void
+auto curry::contention_atomic(serialize_type& data, const int n) -> void
 {
    add_payload(data, []() {return measure(1000); }, n, "contention_atomic");
 }

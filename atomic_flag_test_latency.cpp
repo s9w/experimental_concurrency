@@ -6,7 +6,7 @@
 
 namespace {
    std::atomic_flag ready_signal;
-   easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
+   curry::easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
 
    std::atomic_flag atomic_flag{}; // false/clear init
    
@@ -21,7 +21,7 @@ namespace {
       atomic_flag.clear();
    }
 
-   auto measure() -> result_unit {
+   auto measure() -> curry::result_unit {
       std::jthread j(thread_fun);
       ready_signal.wait(false);
 
@@ -36,7 +36,7 @@ namespace {
 }
 
 
-auto atomic_flag_test_latency(serialize_type& data, const int n) -> void
+auto curry::atomic_flag_test_latency(serialize_type& data, const int n) -> void
 {
    add_payload(data, measure, n, "atomic_flag_test_latency");
 }

@@ -4,8 +4,9 @@
 
 
 namespace {
+   using namespace std::chrono_literals;
 
-   auto measure() -> result_unit {
+   auto measure() -> curry::result_unit {
       const auto t0 = std::chrono::high_resolution_clock::now();
       std::this_thread::sleep_for(1ms);
       const auto t1 = std::chrono::high_resolution_clock::now();
@@ -15,6 +16,6 @@ namespace {
 
 }
 
-auto minimum_sleep(serialize_type& data, const int n) -> void {
+auto curry::minimum_sleep(serialize_type& data, const int n) -> void {
    add_payload(data, measure, n, "minimum_sleep");
 }

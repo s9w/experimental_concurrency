@@ -4,6 +4,7 @@
 #include "contention_atomic.h"
 #include "contention_mutex.h"
 #include "json_write.h"
+#include "map_threads.h"
 #include "raw_mutex_lock_latency.h"
 #include "minimum_sleep.h"
 #include "mutex_lock_unlock_latency_st.h"
@@ -13,10 +14,16 @@
 #include "tools.h"
 #include "unique_lock_latency.h"
 
+#define OOF_IMPL
+#include "oof.h"
 
 int main() {
+   
+
+   using namespace curry;
+
    static_assert(std::is_same_v<std::chrono::high_resolution_clock::duration, std::chrono::nanoseconds>, "No michael no no michael that was so not right");
-   constexpr int n = 5'000;
+   constexpr int n = 50'000;
 
    serialize_type serializations; 
 
@@ -25,21 +32,23 @@ int main() {
    //   std::cin.get();
    //}
 
-   thread_start_latency(serializations, n);
-   thread_start_cost(serializations, n);
+   // thread_start_latency(serializations, n);
+   // thread_start_cost(serializations, n);
+   //
+   // semaphore_latency(serializations, n);
+   // atomic_flag_test_latency(serializations, n);
+   // atomic_flag_clear_latency(serializations, n);
+   // unique_lock_latency(serializations, n);
+   // mutex_lock_unlock_latency_st(serializations, n);
+   // raw_mutex_lock_latency(serializations, n);
+   //
+   //
+   // spinlock_latency(serializations, n);
+   //
+   // contention_atomic(serializations, n);
+   // contention_mutex(serializations, n);
 
-   semaphore_latency(serializations, n);
-   atomic_flag_test_latency(serializations, n);
-   atomic_flag_clear_latency(serializations, n);
-   unique_lock_latency(serializations, n);
-   mutex_lock_unlock_latency_st(serializations, n);
-   raw_mutex_lock_latency(serializations, n);
-
-
-   spinlock_latency(serializations, n);
-
-   contention_atomic(serializations, n);
-   contention_mutex(serializations, n);
+   map_threads(serializations);
 
    //minimum_sleep(n);
 

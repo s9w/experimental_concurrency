@@ -7,7 +7,8 @@
 
 namespace
 {
-   
+   using namespace curry;
+
    std::atomic_flag start_signal;
    int global_int = 0;
    std::mutex mutex;
@@ -62,7 +63,7 @@ namespace
 } // namespace {}
 
 
-auto contention_mutex(serialize_type& data, const int n) -> void
+auto curry::contention_mutex(serialize_type& data, const int n) -> void
 {
    add_payload(data, []() {return measure(1000); }, n, "contention_mutex");
    std::cout << "same_ratio: " << 100.0 * same_ids / (same_ids + different_ids) << "\n";

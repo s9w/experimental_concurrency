@@ -7,7 +7,7 @@
 
 namespace {
    std::atomic_flag ready_signal;
-   easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
+   curry::easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
 
    std::mutex mutex;
 
@@ -20,7 +20,7 @@ namespace {
       t1_atomic.store_and_notify_one(time);
    }
 
-   auto measure() -> result_unit {
+   auto measure() -> curry::result_unit {
       mutex.lock();
       std::jthread j(thread_fun);
       ready_signal.wait(false);
@@ -34,7 +34,7 @@ namespace {
 
 }
 
-auto unique_lock_latency(serialize_type& data, const int n) -> void
+auto curry::unique_lock_latency(serialize_type& data, const int n) -> void
 {
    add_payload(data, measure, n, "unique_lock_latency");
 }

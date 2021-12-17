@@ -2,4 +2,6 @@
 
 #include "tools.h"
 
-auto contention_atomic(serialize_type& data, int n) -> void;
+namespace curry {
+   auto contention_atomic(serialize_type& data, int n) -> void;
+}
