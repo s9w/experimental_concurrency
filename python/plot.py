@@ -102,11 +102,13 @@ def plot_heatmap():
     m = np.zeros(shape=(core_count, core_count))
 
     for i, ns in enumerate(j["thread_map"]):
-        x = i % core_count
-        y = i // core_count
+        y, x = divmod(i, core_count)
         m[y, x] = ns/1000.0
     m = np.maximum(m, np.transpose(m))
-    c = ax.imshow(m, cmap ='Greens')
+    axes_image = ax.imshow(m, cmap ='Greens')
+
+    ax.imshow(np.identity(core_count), cmap ='cool', alpha=np.identity(core_count))
+
     ax.set_xticks(range(core_count))
     ax.set_yticks(range(core_count))
     ax.xaxis.set_label_position('top') 
@@ -115,7 +117,7 @@ def plot_heatmap():
     ax.set_ylabel("Core B")
     ax.xaxis.tick_top()
 
-    plt.colorbar(c, label="Atomic latency between core A and core B [µs]")
+    plt.colorbar(axes_image, label="Atomic latency between core A and core B [µs]")
     fig.tight_layout()
     fig.savefig("heatmap.png", dpi=100)
 

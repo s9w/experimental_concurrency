@@ -23,7 +23,7 @@ int main() {
    using namespace curry;
 
    static_assert(std::is_same_v<std::chrono::high_resolution_clock::duration, std::chrono::nanoseconds>, "No michael no no michael that was so not right");
-   constexpr int n = 50'000;
+   constexpr int n = 1'000;
 
    serialize_type serializations; 
 
