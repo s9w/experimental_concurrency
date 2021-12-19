@@ -63,6 +63,9 @@
     <ClCompile Include="map_threads.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="grid_reporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tools.h">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="map_threads.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="grid_reporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,9 +1,9 @@
 #include "map_threads.h"
 
-#include <semaphore>
 #include <random>
 
-#include "oof.h"
+#include "grid_reporter.h"
+
 
 namespace
 {
@@ -83,10 +83,10 @@ namespace
 
 
    [[nodiscard]] auto get_random_indices(
-      const int core_count
+      const int core_count,
+      const int seed
    ) -> std::vector<size_t>
    {
-      const int seed = 0;
       std::mt19937_64 rng(seed);
 
       std::vector<size_t> indices;
@@ -116,68 +116,6 @@ namespace
       std::terminate();
    }
 
-   struct relative_mover {
-      int m_right{};
-      int m_down{};
-      explicit relative_mover(const int right, const int down)
-         : m_right(right)
-         , m_down(down)
-      {
-         std::string msg;
-         if (right > 0)
-            msg += oof::move_right(right);
-         if (down > 0)
-            msg += oof::move_down(down);
-         std::cout << msg;
-      }
-
-      ~relative_mover(){
-         std::string msg;
-         msg += oof::move_left(m_right+1);
-         if (m_down > 0)
-            msg += oof::move_up(m_down);
-         std::cout << msg;
-      }
-   };
-
-   struct map_progress_reporter{
-      int m_core_count = 0;
-
-      explicit map_progress_reporter(const int core_count)
-         : m_core_count(core_count)
-      {
-         std::string str = oof::cursor_visibility(false);
-         for (int i = 0; i < m_core_count; ++i) {
-            for (int j = 0; j < m_core_count; ++j)
-               str += "- ";
-            str += "\n";
-         }
-
-         str += oof::move_up(m_core_count);
-         str += oof::hposition(0);
-         std::cout << str;
-      }
-
-      ~map_progress_reporter(){
-         std::cout << oof::move_down(m_core_count);
-      }
-
-      auto run(
-         const int cpu_a,
-         const int cpu_b
-      ) const -> void
-      {
-         {
-            relative_mover m{ 2*cpu_a, cpu_b };
-            std::cout << "X";
-         }
-         {
-            relative_mover m{ 2*cpu_b, cpu_a };
-            std::cout << "X";
-         }
-      }
-   };
-
 }
 
 
@@ -187,21 +125,22 @@ auto curry::map_threads(serialize_type& data) -> void
    int current_thread = get_logical_processor_number();
    const int core_count = static_cast<int>(std::thread::hardware_concurrency());
 
-   const map_progress_reporter reporter(core_count);
+   const grid_reporter reporter(core_count);
 
    // Measured CPU cores are measured in randomized order to prevent increased heat to introduce
    // a systematic error
    std::vector<result_unit> times(core_count * core_count);
 
-   for(const size_t index : get_random_indices(core_count))
+   for(const size_t index : get_random_indices(core_count, 0))
    {
-      const int cpu_a = static_cast<int>(index % core_count);
-      const int cpu_b = static_cast<int>(index / core_count);
+      const auto [cpu_b, cpu_a] = std::div(static_cast<int>(index), core_count);
 
       if(cpu_b >= cpu_a)
          continue;
-      constexpr auto x = sizeof(std::vector<int>) + sizeof(int);
-      // Make sure that we're not running on the two targeted threads. This will often pick the
+
+      reporter.mark_cores_as_inprogress(cpu_a, cpu_b);
+
+      // Make sure that we're not running on the two targeted threads. The scheduler will often pick the
       // fastest CORE (id 12 on my system). Move this thread away.
       const std::optional<int> new_thread = pick_another_thread(current_thread, cpu_a, cpu_b, core_count);
       if(new_thread.has_value())
@@ -211,7 +150,7 @@ auto curry::map_threads(serialize_type& data) -> void
       }
 
       times[index] = get_latency(cpu_a, cpu_b);
-      reporter.run(cpu_a, cpu_b);
+      reporter.mark_cores_as_done(cpu_a, cpu_b);
    }
    
    data["thread_map"] = times;
