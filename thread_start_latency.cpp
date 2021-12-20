@@ -19,7 +19,6 @@ namespace {
          std::jthread t(thread_fun);
       }
 
-
       return (t1_atomic.wait_for_non_nullopt_and_exchange() - t0).count();
    }
 }

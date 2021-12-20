@@ -48,7 +48,7 @@
     <ClCompile Include="contention_mutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unique_lock_latency.cpp">
+    <ClCompile Include="scoped_lock_latency.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tools.cpp">
@@ -101,7 +101,7 @@
     <ClInclude Include="contention_mutex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="unique_lock_latency.h">
+    <ClInclude Include="scoped_lock_latency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mutex_lock_unlock_latency_st.h">

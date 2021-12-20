@@ -4,6 +4,26 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include "oof.h"
+
+
+namespace
+{
+
+   [[nodiscard]] auto get_colored_perc_str(const double progress) -> std::string
+   {
+      std::string msg;
+      const auto red_component = static_cast<int>(255 - progress * 255);
+      msg += oof::fg_color(oof::color{ red_component, 255, 0 });
+      const int int_precent = static_cast<int>(std::round(100.0 * progress));
+      msg += std::to_string(int_precent) + "%";
+      msg += oof::reset_formatting();
+      return msg;
+   }
+
+} // namespace {}
+
+
 auto curry::get_horizontal_pos_str(const int pos) -> std::string
 {
    std::string msg = "\x1b[";
@@ -13,7 +33,8 @@ auto curry::get_horizontal_pos_str(const int pos) -> std::string
 }
 
 
-auto curry::set_thread_affinity(const std::vector<int>& cpus) -> void {
+auto curry::set_thread_affinity(const std::vector<int>& cpus) -> void
+{
    if (cpus.empty())
       std::terminate();
    const unsigned int core_count = std::thread::hardware_concurrency();
@@ -30,10 +51,6 @@ auto curry::set_thread_affinity(const std::vector<int>& cpus) -> void {
    {
       std::terminate();
    }
-   // const int logical_processor_num = static_cast<int>(GetCurrentProcessorNumber());
-   // const auto it = std::ranges::find(cpus, logical_processor_num);
-   // if (it == cpus.end())
-   //    std::terminate();
 }
 
 
@@ -44,9 +61,11 @@ auto curry::get_logical_processor_number() -> int
 }
 
 
-auto curry::get_50th_percentile(const std::vector<result_unit>& vec) -> result_unit
+auto curry::get_50th_percentile(
+   const std::vector<result_unit>& vec
+) -> result_unit
 {
-   auto sorted = vec;
+   std::vector<result_unit> sorted = vec;
    std::ranges::sort(sorted);
    const size_t index = std::size(vec) / 2;
    return sorted[index];
@@ -76,10 +95,12 @@ auto curry::progress_reporter::report() -> void
 auto curry::progress_reporter::get_percent() -> std::optional<std::string>
 {
    using namespace std::chrono_literals;
-   if (m_last_report.has_value() == false || (std::chrono::high_resolution_clock::now() - *m_last_report) > 100ms)
+   if (m_last_report_time.has_value() == false || (std::chrono::high_resolution_clock::now() - *m_last_report_time) > 100ms)
    {
-      m_last_report = std::chrono::high_resolution_clock::now();
-      return std::to_string(100 * m_progress / (m_max - 1)) + "%";;
+      m_last_report_time = std::chrono::high_resolution_clock::now();
+
+      const double progress = static_cast<double>(m_progress) / (m_max - 1);
+      return get_colored_perc_str(progress);
    }
    return std::nullopt;
 }
@@ -87,7 +108,7 @@ auto curry::progress_reporter::get_percent() -> std::optional<std::string>
 
 curry::progress_reporter::~progress_reporter()
 {
-   std::cout << get_horizontal_pos_str(m_progress_pos) << "100%\n";
+   std::cout << get_horizontal_pos_str(m_progress_pos) << get_colored_perc_str(1.0) << "\n";
 }
 
 

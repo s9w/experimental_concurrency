@@ -22,6 +22,7 @@ namespace curry {
       constexpr static auto x = sizeof(T);
       constexpr static inline auto zero_value = std::optional<T>{};
       std::atomic<std::optional<T>> m_atomic;
+      //static_assert(sizeof(std::optional<T>)<=8);
 
       constexpr easy_atomic() noexcept : m_atomic(zero_value) {}
       auto wait_for_non_nullopt() const noexcept -> void;
@@ -46,7 +47,7 @@ namespace curry {
    struct progress_reporter {
       int m_progress = 0;
       int m_max = 0;
-      std::optional<std::chrono::high_resolution_clock::time_point> m_last_report{};
+      std::optional<std::chrono::high_resolution_clock::time_point> m_last_report_time{};
       int m_progress_pos{};
       console_cursor_disabler no_cursor;
 

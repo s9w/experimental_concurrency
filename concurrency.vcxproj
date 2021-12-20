@@ -102,7 +102,7 @@
     <ClCompile Include="thread_start_cost.cpp" />
     <ClCompile Include="thread_start_latency.cpp" />
     <ClCompile Include="tools.cpp" />
-    <ClCompile Include="unique_lock_latency.cpp" />
+    <ClCompile Include="scoped_lock_latency.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="atomic_flag_clear_latency.h" />
@@ -120,7 +120,7 @@
     <ClInclude Include="thread_start_cost.h" />
     <ClInclude Include="thread_start_latency.h" />
     <ClInclude Include="tools.h" />
-    <ClInclude Include="unique_lock_latency.h" />
+    <ClInclude Include="scoped_lock_latency.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

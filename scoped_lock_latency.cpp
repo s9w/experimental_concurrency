@@ -1,4 +1,4 @@
-#include "unique_lock_latency.h"
+#include "scoped_lock_latency.h"
 
 #include <mutex>
 
@@ -15,7 +15,7 @@ namespace {
       ready_signal.test_and_set();
       ready_signal.notify_one();
 
-      std::unique_lock<std::mutex> lk(mutex);
+      std::scoped_lock<std::mutex> lk(mutex);
       const auto time = std::chrono::high_resolution_clock::now();
       t1_atomic.store_and_notify_one(time);
    }
@@ -34,7 +34,7 @@ namespace {
 
 }
 
-auto curry::unique_lock_latency(serialize_type& data, const int n) -> void
+auto curry::scoped_lock_latency(serialize_type& data, const int n) -> void
 {
-   add_payload(data, measure, n, "unique_lock_latency");
+   add_payload(data, measure, n, "scoped_lock_latency");
 }
