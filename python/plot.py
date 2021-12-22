@@ -122,19 +122,20 @@ def plot_heatmap():
     fig.savefig("heatmap.png", dpi=100)
 
 plot_heatmap()
-# stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
-# stacked_hist("semaphore_latency")
-# stacked_hist("raw_mutex_lock_latency")
-# stacked_hist("mutex_lock_unlock_latency_st")
-# stacked_hist("unique_lock_latency")
-# stacked_hist("atomic_flag_test_latency")
-# stacked_hist("atomic_flag_clear_latency")
-# stacked_hist("spinlock_latency")
-# stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
-# stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=0.2)
+stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
+stacked_hist("semaphore_latency")
+stacked_hist("raw_mutex_lock_latency")
+stacked_hist("mutex_lock_unlock_latency_st")
+stacked_hist("scoped_lock_latency")
+stacked_hist("atomic_flag_test_latency")
+stacked_hist("atomic_flag_clear_latency")
+stacked_hist("spinlock_latency")
+stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
+stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=0.2)
 
 # stacked_hist("minimum_sleep", max_x_range=5500)
 
+# Print the single-value entries
 for key, value in j.items():
     if len(value) == 1:
         print(key, value)
