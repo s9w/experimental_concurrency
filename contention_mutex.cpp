@@ -10,12 +10,7 @@ namespace
    using namespace curry;
 
    std::atomic_flag start_signal;
-   int global_int = 0;
    std::mutex mutex;
-
-   std::thread::id last_id;
-   int same_ids = 0;
-   int different_ids = 0;
 
    auto thread_fun(std::latch& ready_signal, std::latch& end_signal, const int adds) -> void
    {
@@ -26,13 +21,6 @@ namespace
 
       for (int i = 0; i < adds; ++i) {
          std::scoped_lock lock(mutex);
-         global_int += 1;
-
-         if (this_id == last_id)
-            ++same_ids;
-         else
-            ++different_ids;
-         last_id = this_id;
       }
 
       end_signal.count_down();
@@ -41,7 +29,6 @@ namespace
 
    auto measure(const int adds) -> result_unit
    {
-      global_int = 0;
       std::vector<std::jthread> threads;
       threads.reserve(contention_thread_count);
       std::latch ready_signal(contention_thread_count);
@@ -66,6 +53,4 @@ namespace
 auto curry::contention_mutex(serialize_type& data, const int n) -> void
 {
    add_payload(data, []() {return measure(1000); }, n, "contention_mutex");
-   std::cout << "same_ratio: " << 100.0 * same_ids / (same_ids + different_ids) << "\n";
-   std::cout << "changes: " << different_ids << "\n";
 }
