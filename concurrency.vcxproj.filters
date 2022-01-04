@@ -66,6 +66,12 @@
     <ClCompile Include="grid_reporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="contention_atomic_add.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="contention_atomic_large.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tools.h">
@@ -114,6 +120,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="grid_reporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="contention_atomic_add.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="contention_atomic_large.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

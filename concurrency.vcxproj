@@ -89,6 +89,8 @@
     <ClCompile Include="atomic_flag_clear_latency.cpp" />
     <ClCompile Include="atomic_flag_test_latency.cpp" />
     <ClCompile Include="contention_atomic.cpp" />
+    <ClCompile Include="contention_atomic_add.cpp" />
+    <ClCompile Include="contention_atomic_large.cpp" />
     <ClCompile Include="contention_mutex.cpp" />
     <ClCompile Include="grid_reporter.cpp" />
     <ClCompile Include="json_write.cpp" />
@@ -108,6 +110,8 @@
     <ClInclude Include="atomic_flag_clear_latency.h" />
     <ClInclude Include="atomic_flag_test_latency.h" />
     <ClInclude Include="contention_atomic.h" />
+    <ClInclude Include="contention_atomic_add.h" />
+    <ClInclude Include="contention_atomic_large.h" />
     <ClInclude Include="contention_mutex.h" />
     <ClInclude Include="grid_reporter.h" />
     <ClInclude Include="json_write.h" />

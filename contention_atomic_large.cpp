@@ -1,4 +1,4 @@
-#include "contention_atomic.h"
+#include "contention_atomic_large.h"
 
 #include <atomic>
 
@@ -8,8 +8,16 @@ namespace
 {
    using namespace curry;
 
+   struct large_int{
+      int value;
+      uint8_t filler[16 - 4];
+   };
+   static_assert(sizeof(large_int) == 16);
+
+   
+
    std::atomic_flag start_signal;
-   std::atomic<int> atomic;
+   std::atomic<large_int> atomic;
 
    auto thread_fun(std::latch& ready_signal, std::latch& end_signal, const int adds) -> void
    {
@@ -19,8 +27,8 @@ namespace
 
       for(int i=0; i<adds; ++i)
       {
-         atomic.wait(-1);
-         atomic.store(atomic.load() + 1);
+         atomic.wait(large_int{-1});
+         atomic.store(large_int{ atomic.load().value + 1 });
          atomic.notify_one();
       }
 
@@ -29,7 +37,7 @@ namespace
 
    auto measure(const int adds) -> result_unit
    {
-      atomic.store(0);
+      atomic.store(large_int{0});
       std::vector<std::jthread> threads;
       threads.reserve(contention_thread_count);
       std::latch ready_signal(contention_thread_count);
@@ -50,8 +58,8 @@ namespace
 }
 
 
-auto curry::contention_atomic(serialize_type& data, const int n) -> void
+auto curry::contention_atomic_large(serialize_type& data, const int n) -> void
 {
-   add_payload(data, []() {return measure(1000); }, n, "contention_atomic");
+   add_payload(data, []() {return measure(1000); }, n, "contention_atomic_large");
 }
 

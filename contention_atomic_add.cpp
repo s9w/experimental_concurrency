@@ -1,4 +1,4 @@
-#include "contention_atomic.h"
+#include "contention_atomic_add.h"
 
 #include <atomic>
 
@@ -19,10 +19,9 @@ namespace
 
       for(int i=0; i<adds; ++i)
       {
-         atomic.wait(-1);
-         atomic.store(atomic.load() + 1);
-         atomic.notify_one();
+         // atomic.fetch_add(1);
       }
+         
 
       end_signal.count_down();
    }
@@ -50,8 +49,8 @@ namespace
 }
 
 
-auto curry::contention_atomic(serialize_type& data, const int n) -> void
+auto curry::contention_atomic_add(serialize_type& data, const int n) -> void
 {
-   add_payload(data, []() {return measure(1000); }, n, "contention_atomic");
+   add_payload(data, []() {return measure(1000); }, n, "contention_atomic_add");
 }
 
