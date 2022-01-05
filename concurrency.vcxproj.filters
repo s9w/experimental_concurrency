@@ -13,114 +13,120 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{6486b8de-ef18-4de4-8789-9fc795eb32c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\contention_atomic_add.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="semaphore_latency.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\contention_atomic_flag.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="atomic_flag_test_latency.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\contention_atomic_large.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="atomic_flag_clear_latency.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\contention_mutex.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="thread_start_latency.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\grid_reporter.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="thread_start_cost.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\json_write.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="spinlock_latency.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="minimum_sleep.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\map_threads.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="contention_atomic_flag.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\minimum_sleep.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="contention_mutex.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\mutex_lock_unlock_latency_st.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="scoped_lock_latency.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\scoped_lock_latency.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="tools.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\semaphore_latency.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="mutex_lock_unlock_latency_st.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\spinlock_latency.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="json_write.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\thread_start_cost.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="map_threads.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\thread_start_latency.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="grid_reporter.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\tools.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="contention_atomic_add.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\atomic_flag_clear_latency.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="contention_atomic_large.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\atomic_flag_test_latency.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tools.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\contention_atomic_add.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="semaphore_latency.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\contention_atomic_flag.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="spinlock_latency.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\contention_atomic_large.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="atomic_flag_test_latency.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\contention_mutex.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="atomic_flag_clear_latency.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\grid_reporter.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="thread_start_latency.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\json_write.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="thread_start_cost.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\map_threads.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="minimum_sleep.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\minimum_sleep.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="contention_atomic_flag.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\mutex_lock_unlock_latency_st.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="contention_mutex.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\oof.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="scoped_lock_latency.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\scoped_lock_latency.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="mutex_lock_unlock_latency_st.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\semaphore_latency.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="json_write.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\spinlock_latency.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="map_threads.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\thread_start_cost.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="grid_reporter.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\thread_start_latency.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="contention_atomic_add.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\tools.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="contention_atomic_large.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\atomic_flag_clear_latency.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\atomic_flag_test_latency.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,6 +10,46 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\atomic_flag_clear_latency.cpp" />
+    <ClCompile Include="src\atomic_flag_test_latency.cpp" />
+    <ClCompile Include="src\contention_atomic_add.cpp" />
+    <ClCompile Include="src\contention_atomic_flag.cpp" />
+    <ClCompile Include="src\contention_atomic_large.cpp" />
+    <ClCompile Include="src\contention_mutex.cpp" />
+    <ClCompile Include="src\grid_reporter.cpp" />
+    <ClCompile Include="src\json_write.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\map_threads.cpp" />
+    <ClCompile Include="src\minimum_sleep.cpp" />
+    <ClCompile Include="src\mutex_lock_unlock_latency_st.cpp" />
+    <ClCompile Include="src\scoped_lock_latency.cpp" />
+    <ClCompile Include="src\semaphore_latency.cpp" />
+    <ClCompile Include="src\spinlock_latency.cpp" />
+    <ClCompile Include="src\thread_start_cost.cpp" />
+    <ClCompile Include="src\thread_start_latency.cpp" />
+    <ClCompile Include="src\tools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\atomic_flag_clear_latency.h" />
+    <ClInclude Include="src\atomic_flag_test_latency.h" />
+    <ClInclude Include="src\contention_atomic_add.h" />
+    <ClInclude Include="src\contention_atomic_flag.h" />
+    <ClInclude Include="src\contention_atomic_large.h" />
+    <ClInclude Include="src\contention_mutex.h" />
+    <ClInclude Include="src\grid_reporter.h" />
+    <ClInclude Include="src\json_write.h" />
+    <ClInclude Include="src\map_threads.h" />
+    <ClInclude Include="src\minimum_sleep.h" />
+    <ClInclude Include="src\mutex_lock_unlock_latency_st.h" />
+    <ClInclude Include="src\oof.h" />
+    <ClInclude Include="src\scoped_lock_latency.h" />
+    <ClInclude Include="src\semaphore_latency.h" />
+    <ClInclude Include="src\spinlock_latency.h" />
+    <ClInclude Include="src\thread_start_cost.h" />
+    <ClInclude Include="src\thread_start_latency.h" />
+    <ClInclude Include="src\tools.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -85,45 +125,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="atomic_flag_clear_latency.cpp" />
-    <ClCompile Include="atomic_flag_test_latency.cpp" />
-    <ClCompile Include="contention_atomic_flag.cpp" />
-    <ClCompile Include="contention_atomic_add.cpp" />
-    <ClCompile Include="contention_atomic_large.cpp" />
-    <ClCompile Include="contention_mutex.cpp" />
-    <ClCompile Include="grid_reporter.cpp" />
-    <ClCompile Include="json_write.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="map_threads.cpp" />
-    <ClCompile Include="minimum_sleep.cpp" />
-    <ClCompile Include="mutex_lock_unlock_latency_st.cpp" />
-    <ClCompile Include="semaphore_latency.cpp" />
-    <ClCompile Include="spinlock_latency.cpp" />
-    <ClCompile Include="thread_start_cost.cpp" />
-    <ClCompile Include="thread_start_latency.cpp" />
-    <ClCompile Include="tools.cpp" />
-    <ClCompile Include="scoped_lock_latency.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="atomic_flag_clear_latency.h" />
-    <ClInclude Include="atomic_flag_test_latency.h" />
-    <ClInclude Include="contention_atomic_flag.h" />
-    <ClInclude Include="contention_atomic_add.h" />
-    <ClInclude Include="contention_atomic_large.h" />
-    <ClInclude Include="contention_mutex.h" />
-    <ClInclude Include="grid_reporter.h" />
-    <ClInclude Include="json_write.h" />
-    <ClInclude Include="map_threads.h" />
-    <ClInclude Include="minimum_sleep.h" />
-    <ClInclude Include="mutex_lock_unlock_latency_st.h" />
-    <ClInclude Include="semaphore_latency.h" />
-    <ClInclude Include="spinlock_latency.h" />
-    <ClInclude Include="thread_start_cost.h" />
-    <ClInclude Include="thread_start_latency.h" />
-    <ClInclude Include="tools.h" />
-    <ClInclude Include="scoped_lock_latency.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
