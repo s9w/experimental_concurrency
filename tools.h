@@ -10,7 +10,7 @@
 
 #include <chrono>
 
-namespace curry {
+namespace excon {
    using result_unit = typename std::chrono::nanoseconds::rep;
 
    static const int contention_thread_count = static_cast<int>(std::thread::hardware_concurrency()) / 2 - 1;

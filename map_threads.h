@@ -1,6 +1,6 @@
 #pragma once
 #include "tools.h"
 
-namespace curry {
+namespace excon {
    auto map_threads(serialize_type& data) -> void;
 }

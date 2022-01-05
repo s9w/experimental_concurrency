@@ -2,6 +2,6 @@
 
 #include "tools.h"
 
-namespace curry {
+namespace excon {
    auto spinlock_latency(serialize_type& data, int n) -> void;
 }

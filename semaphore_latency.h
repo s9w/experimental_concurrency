@@ -2,6 +2,6 @@
 
 #include "tools.h"
 
-namespace curry {
+namespace excon {
    auto semaphore_latency(serialize_type& data, int n) -> void;
 }

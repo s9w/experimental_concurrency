@@ -5,7 +5,7 @@
 #include "oof.h"
 
 
-curry::grid_reporter::grid_reporter(const int core_count): m_core_count(core_count)
+excon::grid_reporter::grid_reporter(const int core_count): m_core_count(core_count)
 {
    std::string str = oof::cursor_visibility(false);
    str += oof::fg_color(oof::color{ 255, 100, 100 });
@@ -22,13 +22,13 @@ curry::grid_reporter::grid_reporter(const int core_count): m_core_count(core_cou
 }
 
 
-curry::grid_reporter::~grid_reporter()
+excon::grid_reporter::~grid_reporter()
 {
    std::cout << oof::move_down(m_core_count);
 }
 
 
-auto curry::grid_reporter::relative_write(
+auto excon::grid_reporter::relative_write(
    const int right,
    const int down,
    const std::string& str
@@ -49,7 +49,7 @@ auto curry::grid_reporter::relative_write(
 }
 
 
-auto curry::grid_reporter::mark_cores_as_inprogress(
+auto excon::grid_reporter::mark_cores_as_inprogress(
    const int core_a,
    const int core_b
 ) const -> void
@@ -61,7 +61,7 @@ auto curry::grid_reporter::mark_cores_as_inprogress(
 }
 
 
-auto curry::grid_reporter::mark_cores_as_done(
+auto excon::grid_reporter::mark_cores_as_done(
    const int core_a,
    const int core_b
 ) const -> void

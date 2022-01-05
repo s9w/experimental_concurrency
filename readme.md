@@ -30,11 +30,11 @@ Interesting here is how long the spawning thread (often the "main" thread) is bl
 
 This is the results for the AMD Ryzen:
 
-![](python/thread_start_ryzen.png)
+![](analysis/thread_start_ryzen.png)
 
 And for the Intel:
 
-![](python/thread_start_7700.png)
+![](analysis/thread_start_7700.png)
 
 For both architectures, it takes quite a while longer for the new thread to be ready than for the creation function to return. If those numbers are high depends on the use-case.
 
@@ -53,11 +53,11 @@ Besides starting threads, you often want to communicate between them. There are 
 
 **AMD**:
 
-![](python/latency_comparison_ryzen.png)
+![](analysis/latency_comparison_ryzen.png)
 
 **Intel**:
 
-![](python/latency_comparison_7700.png)
+![](analysis/latency_comparison_7700.png)
 
 TODO other latencies
 
@@ -74,7 +74,7 @@ With such a setup, a clear performance difference can now be observed:
 
 **Intel**:
 
-![](python/contention_7700.png)
+![](analysis/contention_7700.png)
 
 If we drive into the code of `std::mutex::lock()` in MSVC, we end up at `AcquireSRWLockExclusive()` while the atomic `.wait()` function ends up at [`WaitOnAddress()`](https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitonaddress). That `WaitOnAddress()` performs better, although it suffers from some restrictions (only available on Windows8+; limited to 1,2,4 or 8 byte values; can return spuriously).
 
@@ -85,7 +85,7 @@ In some of the measurements above, you might have noticed a curious pleateau in 
 
 To measure this effect, we can run another latency test and set the thread affinity explicitly to limit communication between two threads. Doing that for all combinations of the 16 threads makes for 256 combinations. We can then visualize the median latencies in a grid:
 
-![](python/heatmap_ryzen.png)
+![](analysis/heatmap_ryzen.png)
 
 The diagonal is removed as communication within a core is not interesting. It's clear that communication between cores within a physical package (core 0-7 and cores 8-15) is faster than between them, proving this hypothesis. The difference measured is about a factor of 2.
 
@@ -93,8 +93,8 @@ There was another interesting phenomenom discovered during development of this t
 
 ## Summary
 - Creating a thread is very costly compared to all other thread operations
-- Latencies for inter-thread communication is in the range of one or a few microseconds
-- Latencies for spinlocks is about an order of magnitude smaller
+- Latencies for inter-thread communication via synchronization primitives is in the range of one or a few microseconds
+- Latency of a spinlock is about an order of magnitude faster
 - All synchroniation primitives exhibited identical latency times in uncontended workload
 - Under contention, more specialized operations (atomics) performed better
 - If latencies are very important, be mindful of your CPU architecture

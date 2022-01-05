@@ -7,7 +7,7 @@
 
 namespace
 {
-   using namespace curry;
+   using namespace excon;
 
    std::atomic_flag start_signal;
    easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
@@ -119,7 +119,7 @@ namespace
 }
 
 
-auto curry::map_threads(serialize_type& data) -> void
+auto excon::map_threads(serialize_type& data) -> void
 {
    std::cout << "mapping:\n";
    int current_thread = get_logical_processor_number();

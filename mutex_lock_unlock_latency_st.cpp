@@ -6,7 +6,7 @@
 
 namespace {
 
-   auto measure() -> curry::result_unit {
+   auto measure() -> excon::result_unit {
       std::mutex mutex; // unlocked initially
       mutex.lock();
       constexpr int n = 10'000;
@@ -24,6 +24,6 @@ namespace {
 
 }
 
-auto curry::mutex_lock_unlock_latency_st(serialize_type& data, const int n) -> void {
+auto excon::mutex_lock_unlock_latency_st(serialize_type& data, const int n) -> void {
    add_payload(data, measure, n, "mutex_lock_unlock_latency_st");
 }

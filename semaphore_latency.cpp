@@ -6,7 +6,7 @@
 
 namespace {
    std::atomic_flag ready_signal;
-   curry::easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
+   excon::easy_atomic<std::chrono::high_resolution_clock::time_point> t1_atomic;
 
    std::binary_semaphore semaphore{ 0 };
 
@@ -19,7 +19,7 @@ namespace {
       t1_atomic.store_and_notify_one(time);
    }
 
-   auto measure() -> curry::result_unit {
+   auto measure() -> excon::result_unit {
       std::jthread j(thread_fun);
       ready_signal.wait(false);
 
@@ -32,7 +32,7 @@ namespace {
 
 }
 
-auto curry::semaphore_latency(serialize_type& data, const int n) -> void
+auto excon::semaphore_latency(serialize_type& data, const int n) -> void
 {
    add_payload(data, measure, n, "semaphore_latency");
 }

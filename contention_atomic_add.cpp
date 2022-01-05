@@ -6,7 +6,7 @@
 
 namespace
 {
-   using namespace curry;
+   using namespace excon;
 
    std::atomic_flag start_signal;
    std::atomic<int> atomic;
@@ -49,7 +49,7 @@ namespace
 }
 
 
-auto curry::contention_atomic_add(serialize_type& data, const int n) -> void
+auto excon::contention_atomic_add(serialize_type& data, const int n) -> void
 {
    add_payload(data, []() {return measure(1000); }, n, "contention_atomic_add");
 }

@@ -6,7 +6,7 @@
 
 namespace
 {
-   using namespace curry;
+   using namespace excon;
 
    struct large_int{
       int value;
@@ -58,7 +58,7 @@ namespace
 }
 
 
-auto curry::contention_atomic_large(serialize_type& data, const int n) -> void
+auto excon::contention_atomic_large(serialize_type& data, const int n) -> void
 {
    add_payload(data, []() {return measure(1000); }, n, "contention_atomic_large");
 }

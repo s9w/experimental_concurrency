@@ -14,7 +14,10 @@ def get_title(filename):
         "condition_variable_latency": "std::condition_variable.wait() latency",
         "atomic_flag_test_latency": "std::atomic_flag test_and_set() latency",
         "atomic_flag_clear_latency": "std::atomic_flag clear() latency",
-        "spinlock_latency": "spinlock latency"
+        "spinlock_latency": "Spinlock latency",
+        "contention_atomic_flag": "std::atomic_flag",
+        "contention_atomic_add": "std::atomic add",
+        "contention_mutex": "std::mutex"
     }
     if filename not in lookup_map:
         return filename
@@ -121,17 +124,25 @@ def plot_heatmap():
     fig.tight_layout()
     fig.savefig("heatmap.png", dpi=100)
 
-plot_heatmap()
-stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
-stacked_hist("semaphore_latency")
-stacked_hist("raw_mutex_lock_latency")
-stacked_hist("mutex_lock_unlock_latency_st")
-stacked_hist("scoped_lock_latency")
-stacked_hist("atomic_flag_test_latency")
-stacked_hist("atomic_flag_clear_latency")
-stacked_hist("spinlock_latency")
+
+# stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
+
 stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
-stacked_hist(["contention_atomic", "contention_mutex"], fn="contention", max_x_range=0.2)
+# stacked_hist("spinlock_latency")
+stacked_hist("semaphore_latency")
+
+# stacked_hist(["contention_atomic_add", "contention_atomic_flag", "contention_mutex"], fn="contention")
+
+
+# stacked_hist("raw_mutex_lock_latency")
+# stacked_hist("mutex_lock_unlock_latency_st")
+# stacked_hist("scoped_lock_latency")
+# stacked_hist("atomic_flag_test_latency")
+# stacked_hist("atomic_flag_clear_latency")
+
+
+
+# plot_heatmap()
 
 # stacked_hist("minimum_sleep", max_x_range=5500)
 

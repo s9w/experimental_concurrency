@@ -24,7 +24,7 @@ namespace
 } // namespace {}
 
 
-auto curry::get_horizontal_pos_str(const int pos) -> std::string
+auto excon::get_horizontal_pos_str(const int pos) -> std::string
 {
    std::string msg = "\x1b[";
    msg += std::to_string(pos);
@@ -33,7 +33,7 @@ auto curry::get_horizontal_pos_str(const int pos) -> std::string
 }
 
 
-auto curry::set_thread_affinity(const std::vector<int>& cpus) -> void
+auto excon::set_thread_affinity(const std::vector<int>& cpus) -> void
 {
    if (cpus.empty())
       std::terminate();
@@ -54,14 +54,14 @@ auto curry::set_thread_affinity(const std::vector<int>& cpus) -> void
 }
 
 
-auto curry::get_logical_processor_number() -> int
+auto excon::get_logical_processor_number() -> int
 {
    const int logical_processor_num = static_cast<int>(GetCurrentProcessorNumber());
    return logical_processor_num;
 }
 
 
-auto curry::get_50th_percentile(
+auto excon::get_50th_percentile(
    const std::vector<result_unit>& vec
 ) -> result_unit
 {
@@ -72,7 +72,7 @@ auto curry::get_50th_percentile(
 }
 
 
-curry::progress_reporter::progress_reporter(
+excon::progress_reporter::progress_reporter(
    const std::string& description,
    const int max
 )
@@ -83,7 +83,7 @@ curry::progress_reporter::progress_reporter(
 }
 
 
-auto curry::progress_reporter::report() -> void
+auto excon::progress_reporter::report() -> void
 {
    const std::optional<std::string> percent = get_percent();
    if (percent.has_value())
@@ -92,7 +92,7 @@ auto curry::progress_reporter::report() -> void
 }
 
 
-auto curry::progress_reporter::get_percent() -> std::optional<std::string>
+auto excon::progress_reporter::get_percent() -> std::optional<std::string>
 {
    using namespace std::chrono_literals;
    if (m_last_report_time.has_value() == false || (std::chrono::high_resolution_clock::now() - *m_last_report_time) > 100ms)
@@ -106,21 +106,21 @@ auto curry::progress_reporter::get_percent() -> std::optional<std::string>
 }
 
 
-curry::progress_reporter::~progress_reporter()
+excon::progress_reporter::~progress_reporter()
 {
    std::cout << get_horizontal_pos_str(m_progress_pos) << get_colored_perc_str(1.0) << "\n";
 }
 
 
 template <typename T>
-auto curry::easy_atomic<T>::wait_for_non_nullopt() const noexcept -> void
+auto excon::easy_atomic<T>::wait_for_non_nullopt() const noexcept -> void
 {
    m_atomic.wait(zero_value);
 }
 
 
 template <typename T>
-auto curry::easy_atomic<T>::wait_for_non_nullopt_and_exchange(
+auto excon::easy_atomic<T>::wait_for_non_nullopt_and_exchange(
    std::memory_order order
 ) noexcept -> T
 {
@@ -130,7 +130,7 @@ auto curry::easy_atomic<T>::wait_for_non_nullopt_and_exchange(
 
 
 template <typename T>
-auto curry::easy_atomic<T>::store_and_notify_one(
+auto excon::easy_atomic<T>::store_and_notify_one(
    T new_value,
    std::memory_order order
 ) noexcept -> void
@@ -141,7 +141,7 @@ auto curry::easy_atomic<T>::store_and_notify_one(
 
 
 template <typename T>
-auto curry::easy_atomic<T>::store_and_notify_all(
+auto excon::easy_atomic<T>::store_and_notify_all(
    T new_value,
    std::memory_order order
 ) noexcept -> void
@@ -151,4 +151,4 @@ auto curry::easy_atomic<T>::store_and_notify_all(
 }
 
 
-template curry::easy_atomic<std::chrono::high_resolution_clock::time_point>;
+template excon::easy_atomic<std::chrono::high_resolution_clock::time_point>;

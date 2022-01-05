@@ -5,7 +5,7 @@
 namespace
 {
 
-   [[nodiscard]] auto get_vec_str(const std::vector<curry::result_unit>& vec) -> std::string
+   [[nodiscard]] auto get_vec_str(const std::vector<excon::result_unit>& vec) -> std::string
    {
       std::string str;
       for (int i_vec = 0; i_vec < std::size(vec); ++i_vec)
@@ -19,7 +19,7 @@ namespace
 
 } // namespace {}
 
-auto curry::json_write(const serialize_type& data, const char* fn) -> void
+auto excon::json_write(const serialize_type& data, const char* fn) -> void
 {
    std::string str;
    str += "{\n";

@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace curry
+namespace excon
 {
 
    struct grid_reporter {
