@@ -24,9 +24,6 @@
     <ClCompile Include="atomic_flag_test_latency.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="raw_mutex_lock_latency.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="atomic_flag_clear_latency.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,7 +39,7 @@
     <ClCompile Include="minimum_sleep.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="contention_atomic.cpp">
+    <ClCompile Include="contention_atomic_flag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="contention_mutex.cpp">
@@ -86,9 +83,6 @@
     <ClInclude Include="atomic_flag_test_latency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="raw_mutex_lock_latency.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="atomic_flag_clear_latency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -101,7 +95,7 @@
     <ClInclude Include="minimum_sleep.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="contention_atomic.h">
+    <ClInclude Include="contention_atomic_flag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="contention_mutex.h">

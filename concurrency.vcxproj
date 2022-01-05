@@ -88,7 +88,7 @@
   <ItemGroup>
     <ClCompile Include="atomic_flag_clear_latency.cpp" />
     <ClCompile Include="atomic_flag_test_latency.cpp" />
-    <ClCompile Include="contention_atomic.cpp" />
+    <ClCompile Include="contention_atomic_flag.cpp" />
     <ClCompile Include="contention_atomic_add.cpp" />
     <ClCompile Include="contention_atomic_large.cpp" />
     <ClCompile Include="contention_mutex.cpp" />
@@ -98,7 +98,6 @@
     <ClCompile Include="map_threads.cpp" />
     <ClCompile Include="minimum_sleep.cpp" />
     <ClCompile Include="mutex_lock_unlock_latency_st.cpp" />
-    <ClCompile Include="raw_mutex_lock_latency.cpp" />
     <ClCompile Include="semaphore_latency.cpp" />
     <ClCompile Include="spinlock_latency.cpp" />
     <ClCompile Include="thread_start_cost.cpp" />
@@ -109,7 +108,7 @@
   <ItemGroup>
     <ClInclude Include="atomic_flag_clear_latency.h" />
     <ClInclude Include="atomic_flag_test_latency.h" />
-    <ClInclude Include="contention_atomic.h" />
+    <ClInclude Include="contention_atomic_flag.h" />
     <ClInclude Include="contention_atomic_add.h" />
     <ClInclude Include="contention_atomic_large.h" />
     <ClInclude Include="contention_mutex.h" />
@@ -118,7 +117,6 @@
     <ClInclude Include="map_threads.h" />
     <ClInclude Include="minimum_sleep.h" />
     <ClInclude Include="mutex_lock_unlock_latency_st.h" />
-    <ClInclude Include="raw_mutex_lock_latency.h" />
     <ClInclude Include="semaphore_latency.h" />
     <ClInclude Include="spinlock_latency.h" />
     <ClInclude Include="thread_start_cost.h" />
