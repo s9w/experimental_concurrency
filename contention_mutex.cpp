@@ -11,6 +11,7 @@ namespace
 
    std::atomic_flag start_signal;
    std::mutex mutex;
+   int counter = 0;
 
    auto thread_fun(std::latch& ready_signal, std::latch& end_signal, const int adds) -> void
    {
@@ -21,6 +22,7 @@ namespace
 
       for (int i = 0; i < adds; ++i) {
          std::scoped_lock lock(mutex);
+         ++counter;
       }
 
       end_signal.count_down();

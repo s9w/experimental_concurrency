@@ -19,7 +19,7 @@ namespace
 
       for(int i=0; i<adds; ++i)
       {
-         // atomic.fetch_add(1);
+         atomic.fetch_add(1);
       }
          
 
