@@ -30,11 +30,11 @@ Interesting here is how long the spawning thread (often the "main" thread) is bl
 
 This is the results for the AMD Ryzen:
 
-![](analysis/thread_start_ryzen.png)
+![thread_start_ryzen](https://user-images.githubusercontent.com/6044318/148251172-1d018da7-427d-4971-9785-79af1d222cb3.png)
 
 And for the Intel:
 
-![](analysis/thread_start_7700.png)
+![thread_start_7700](https://user-images.githubusercontent.com/6044318/148234953-2fe623b4-eb93-4927-b0c6-21cac533f90a.png)
 
 For both architectures, it takes quite a while longer for the new thread to be ready than for the creation function to return. If those numbers are high depends on the use-case.
 
@@ -49,17 +49,24 @@ Besides starting threads, you often want to communicate between them. There are 
 - And to compare, a brute-force [spinlock](https://en.wikipedia.org/wiki/Spinlock) is expected to outperform everything in terms of pure latency, even with the known drawbacks.
 
 
-**Results**: Under "lab" conditions with an idle system and the measurements carefully done one after another, the latencies of all the proper primitives (`std::atomic_flag`, `std::semaphore`, `std::mutex`) perform **identical**. Namely on the Intel CPU they have a latency of about 4µs, and ~0.8µs on the AMD. A spinlock blows them both out of the water with 1/10th of that latency. 
+**Results**: Under "lab" conditions with an idle system and the measurements carefully done one after another, the latencies of all the proper primitives (`std::atomic_flag`, `std::semaphore`, `std::mutex`) perform almost identical with atomics slightly faster:
+
+![latency_comparison_primitives_ryzen](https://user-images.githubusercontent.com/6044318/148251935-c7bfa70d-d9fb-4a0a-981c-a05233c9380f.png)
+
+If a spinlock is added to the mix however, it vastly outperforms them in terms of latency. The significant drawbacks of spinlocks should be kept in mind.
 
 **AMD**:
 
-![](analysis/latency_comparison_ryzen.png)
+![latency_comparison_spinlock_ryzen](https://user-images.githubusercontent.com/6044318/148252646-552b80b1-e8b4-4dfa-81b2-041bb7d359e9.png)
 
-**Intel**:
+Here are typical values for the Ryzen CPU:
 
-![](analysis/latency_comparison_7700.png)
-
-TODO other latencies
+|                        | 50th percentile (median) [µs] | 99th percentile [µs] | 99.9th percentile [µs]
+-------------------------|------------------------------:|---------------------:|----------------------:
+scoped_lock latency      | 1.00                          | 5.00                 | 15.70
+atomic_flag_test latency | 0.80                          | 4.60                 | 16.10
+semaphore latency        | 0.80                          | 4.70                 | 16.60
+spinlock latency         | 0.20                          | 0.50                 |  6.41
 
 If you're like me you might wonder how come that all these different primitives result in the same latencies. It's a bit more complex then that, see below.
 
@@ -70,22 +77,26 @@ It's one thing to measure primitive communication between two threads in an idle
 - A `std::atomic_flag` being used as a signal for other threads to increment via `.notify_one()`
 - And as a bonus, a `std::atomic_int` being incremented directly via `.fetch_add(1)`
 
-With such a setup, a clear performance difference can now be observed:
+With such a setup, a clear performance difference can now be observed with atomics suddenly outperforming a mutex by an order of magnitude:
 
-**Intel**:
+**AMD**:
 
-![](analysis/contention_7700.png)
+![contention_ryzen](https://user-images.githubusercontent.com/6044318/148255066-211e327c-808b-4d1d-ad69-a789ce859529.png)
 
-If we drive into the code of `std::mutex::lock()` in MSVC, we end up at `AcquireSRWLockExclusive()` while the atomic `.wait()` function ends up at [`WaitOnAddress()`](https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitonaddress). That `WaitOnAddress()` performs better, although it suffers from some restrictions (only available on Windows8+; limited to 1,2,4 or 8 byte values; can return spuriously).
+In this special case of multiple threads incrementing a number, atomics even offer the more specialized function [`.fetch_add()`](https://en.cppreference.com/w/cpp/atomic/atomic/fetch_add). That is even faster:
 
-The atomic [`.fetch_add()`](https://en.cppreference.com/w/cpp/atomic/atomic/fetch_add) performs even better since it uses system intrinsics for that particular operation. That again limits the range of scenarios where it can be used.
+**AMD**:
+
+![contention_add_ryzen](https://user-images.githubusercontent.com/6044318/148255445-8c270a3a-7071-450c-af9f-6fadc546b767.png)
+
+If we drive into the code of `std::mutex::lock()` in MSVC, we end up at `AcquireSRWLockExclusive()` while the atomic `.wait()` function ends up at [`WaitOnAddress()`](https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitonaddress). That `WaitOnAddress()` performs better, although it suffers from some restrictions (only available on Windows8+; limited to 1,2,4 or 8 byte values; can return spuriously). The atomic `.fetch_add()` performs even better since it uses system intrinsics for that particular operation. That again limits the range of scenarios where it can be used.
 
 ## Differences between hardware cores
 In some of the measurements above, you might have noticed a curious pleateau in the CDF for the Ryzen CPU. That direcly relates to a bimodal distrubution of observed latencies. The reason for this is actually pretty cool. The CPU in question (3800X) has 8 Cores / 16 threads. But it's build from two identical packages ("CCX") of [4 cores / 8 threads each](https://en.wikipedia.org/wiki/Zen_2#Design). There's a fast interconnect but it's not quite as fast as communication within a single CCX.
 
 To measure this effect, we can run another latency test and set the thread affinity explicitly to limit communication between two threads. Doing that for all combinations of the 16 threads makes for 256 combinations. We can then visualize the median latencies in a grid:
 
-![](analysis/heatmap_ryzen.png)
+![heatmap_ryzen](https://user-images.githubusercontent.com/6044318/148236028-d5783fdf-249c-4404-b0b6-c1668a4da0de.png)
 
 The diagonal is removed as communication within a core is not interesting. It's clear that communication between cores within a physical package (core 0-7 and cores 8-15) is faster than between them, proving this hypothesis. The difference measured is about a factor of 2.
 
