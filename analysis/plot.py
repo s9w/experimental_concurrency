@@ -3,18 +3,19 @@ import numpy as np
 import json
 
 j = json.load(open("json_out.txt"))
-
+cpu_id = "generic"
 
 def get_title(filename):
     lookup_map = {
-        "thread_start_latency": "thread start latency",
-        "thread_start_cost": "thread start cost",
-        "semaphore_latency": "Semaphore latency",
+        "thread_start_latency": "Time until thread is ready",
+        "thread_start_cost": "Cost in spawning thread",
+        "semaphore_latency": "std::semaphore",
         "raw_mutex_lock_latency": "Mutex latency",
         "condition_variable_latency": "std::condition_variable.wait() latency",
-        "atomic_flag_test_latency": "std::atomic_flag test_and_set() latency",
-        "atomic_flag_clear_latency": "std::atomic_flag clear() latency",
-        "spinlock_latency": "Spinlock latency",
+        "atomic_flag_test_latency": "std::atomic_flag",
+        "atomic_flag_clear_latency": "std::atomic_flag clear()",
+        "spinlock_latency": "Spinlock",
+        "scoped_lock_latency": "std::scoped_lock",
         "contention_atomic_flag": "std::atomic_flag",
         "contention_atomic_add": "std::atomic add",
         "contention_mutex": "std::mutex"
@@ -37,7 +38,7 @@ def print_metrics(in_fn, data_us):
     perc_99 = np.percentile(data_us, 99.0)
     perc_999 = np.percentile(data_us, 99.9)
     print(
-        "{:<28} avg {:>8.2f} 99th {:>8.2f} ({:>4.1f}x), 99.9th {:>8.2f} ({:>4.1f}x) med: {:.1f}".format(
+        "{:<28} avg {:>8.2f} 99th {:>8.2f} ({:>4.1f}x), 99.9th {:>8.2f} ({:>4.1f}x) med: {:.2f}".format(
             in_fn, avg, perc_99, perc_99/avg, perc_999, perc_999/avg, np.median(data_us)
         )
     )
@@ -60,7 +61,7 @@ def get_cdf(sorted_us, max_x_range):
     return new_x, new_y
     
 
-def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Time"):
+def stacked_hist(filenames, title, fn=None, max_x_range=None, xlabel="Time"):
     if type(filenames) is not list:
         filenames = [filenames]
         if fn is None:
@@ -86,6 +87,7 @@ def stacked_hist(filenames, fn=None, max_x_range=None, xlabel="Time"):
     ax.set_ylabel("Probability of values ≤ x")
     ax.set_xlim(0, max_x_range)
     ax.set_ylim(-2, 105.0)
+    ax.set_title("{} [{}]".format(title, cpu_id))
     ax.spines["top"].set_visible(False)
     ax.spines["bottom"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -125,13 +127,20 @@ def plot_heatmap():
     fig.savefig("heatmap.png", dpi=100)
 
 
-# stacked_hist(["thread_start_cost", "thread_start_latency"], fn="thread_start")
+# cpu_id = "Intel i7-7700"
+cpu_id = "Ryzen 3800X"
 
-stacked_hist(["spinlock_latency", "semaphore_latency"], fn="latency_comparison")
+# stacked_hist(["thread_start_cost", "thread_start_latency"], title="Thread creation", fn="thread_start")
+
+# stacked_hist(["atomic_flag_test_latency", "semaphore_latency", "scoped_lock_latency"], title="Sync primitive latencies", fn="latency_comparison_primitives")
+# stacked_hist(["spinlock_latency", "semaphore_latency"], title="Semaphore vs spinlock latencies", fn="latency_comparison_spinlock")
+# stacked_hist(["atomic_flag_test_latency", "semaphore_latency", "scoped_lock_latency", "spinlock_latency"], title="Sync primitive latencies", fn="latency_comparison_all")
+# stacked_hist("atomic_flag_test_latency")
 # stacked_hist("spinlock_latency")
-stacked_hist("semaphore_latency")
+# stacked_hist("semaphore_latency")
+# stacked_hist("scoped_lock_latency")
 
-# stacked_hist(["contention_atomic_add", "contention_atomic_flag", "contention_mutex"], fn="contention")
+stacked_hist(["contention_mutex", "contention_atomic_flag", "contention_atomic_add"], title="Sync primitives under contention", fn="contention")
 
 
 # stacked_hist("raw_mutex_lock_latency")
@@ -141,6 +150,12 @@ stacked_hist("semaphore_latency")
 # stacked_hist("atomic_flag_clear_latency")
 
 
+
+
+# stacked_hist(["atomic_flag_test_latency"], fn="null")
+# stacked_hist(["semaphore_latency"], fn="null")
+# stacked_hist(["scoped_lock_latency"], fn="null")
+# stacked_hist(["spinlock_latency"], fn="null")
 
 # plot_heatmap()
 
