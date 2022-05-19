@@ -2,7 +2,7 @@
 
 This repository contains code to test and benchmark a bunch of C++ concurrency features. It's mostly concerned with the latency of different synchronization primitive operations, which is a crucial metric for time-critical applications. This readme contains an analysis and summary of the data obtained from two CPUs.
 
-## Statistical prelude
+## Statistical prelude; setup
 Performance measurements must be done repeatedly to properly do statistics with them. With concurrency this is especially important as the properties of the operating system's scheduling are out of the control of an application developer and can't be assumed to be well-behaved.
 
 When values are distrubuted [normally](https://en.wikipedia.org/wiki/Normal_distribution), averages and standard deviations offer a sufficient characterization of a value. This is almost never the case for concurrency performance measurements where outliers are quite common. Therefore, all measurements are plotted as a cumulative distributions ([CDF](https://en.wikipedia.org/wiki/Cumulative_distribution_function)).
@@ -21,37 +21,40 @@ The tests were run on Windows 10. The two CPUs featured here are an Intel i7 770
 One of the most basic operation is the creation of a thread.
 
 ```c++
-auto thread_function(){
+auto thread_function() -> void
+{
    // time_point C
 }
 
 // time_point A
-std::jthread t(thread_function);
+std::jthread t{thread_function};
 // time_point B
 ```
 
-Interesting here is how long the spawning thread (often the "main" thread) is blocked (the "cost", A to B) and how long it takes for the thread to be ready (the "latency", A to C). These two times are *not* identical.
+Of interest here is
+1) how long the creating thread (often the "main" thread) is blocked (the "cost", A to B) and
+2) how long it takes for the thread to be ready (the "latency", A to C).
 
-This is the results for the AMD Ryzen:
+Results:
 
 ![thread_start_ryzen](https://user-images.githubusercontent.com/6044318/148402387-28e70eaf-9b2f-4c65-a6d0-172a6ea79ce6.png)
 
 ![thread_start_7700](https://user-images.githubusercontent.com/6044318/148346393-11dac0d5-9956-438d-8469-be2f40969b3d.png)
 
-For both architectures, it takes quite a while longer for the new thread to be ready than for the creation function to return. If those numbers are high depends on the use-case.
+For both architectures it takes quite a while longer for the new thread to be ready than for the creation function to return.
 
-Note that the distribution has quite a long tail. If we look at the 99.9th percentile (i.e., the worst time out of 1000 runs), that value is about 5 times as high as the median. For the Intel CPU for example, that is over 300µs - which is a lot in almost all real-time scenarios. The chance of these slow cases to occur naturally increases with the more often you try your luck. I would say the general consensus that thread creation is a bad idea is justified.
+Note that the distribution has a pretty long tail. If we look at the 99.9th percentile (i.e., the worst time out of 1000 runs), that value is about 5 times as high as the median. For the Intel CPU, that is over 300µs - which is a lot in almost all real-time scenarios. The chance of these slow cases to occur naturally increases with the more often you try your luck. I would say the general consensus that thread creation should be avoided where possible is justified.
 
 ## Latencies of synchronization primitives
-Besides starting threads, you often want to communicate between them. There are lots of so-called synchronization primitives in the C++ standard library that might be used for that. 
+After starting threads, you often want to communicate between them. There are lots of so-called synchronization primitives in the C++ standard library that might be used for that. 
 
-- There's `std::atomic_flag` where the time between calling `atomic_flag.test_and_set(); atomic_flag.notify_one();` in one thread and and `atomic_flag.wait(false)` returning in another thread is important.
-- For mutexes, we can look at the time between one thread calling `mutex.unlock()` and another thread acquiring that lock again.
-- For a `std::semaphore` we can look at the time between `semaphore.release()` in one thread and `semaphore.acquire()` returning in another thread.
-- And to compare, a brute-force [spinlock](https://en.wikipedia.org/wiki/Spinlock) is expected to outperform everything in terms of pure latency, even with the known drawbacks.
+- There's [`std::atomic_flag`](https://en.cppreference.com/w/cpp/atomic/atomic_flag) where the time between calling `atomic_flag.test_and_set(); atomic_flag.notify_one();` in one thread and and `atomic_flag.wait(false)` returning in another thread is important.
+- For mutexes, we can look at the time between one thread calling `mutex.unlock()` and another thread acquiring that lock again. We use the modern wrapper [`std::scoped_lock`](https://en.cppreference.com/w/cpp/thread/scoped_lock).
+- For a [`std::counting_semaphore`](https://en.cppreference.com/w/cpp/thread/counting_semaphore) we can look at the time between `semaphore.release()` in one thread and `semaphore.acquire()` returning in another thread.
+- And to compare, a brute-force [spinlock](https://en.wikipedia.org/wiki/Spinlock) is expected to outperform everything in terms of pure latency but comes with the known drawbacks.
 
 
-**Results**: Under "lab" conditions with an idle system and the measurements carefully done one after another, the latencies of all the proper primitives (`std::atomic_flag`, `std::semaphore`, `std::mutex`) perform almost identical with atomics slightly faster:
+**Results**: Under "lab" conditions with an idle system and the measurements carefully done one after another, the latencies of all the proper primitives (`std::atomic_flag`, `std::semaphore`, `std::mutex`) perform almost identical with mutex slightly slower:
 
 ![latency_comparison_primitives_7700](https://user-images.githubusercontent.com/6044318/148345307-95520f86-c7c3-4bbe-bab5-63a5639bb024.png)
 
@@ -74,13 +77,13 @@ spinlock latency         | 0.20                          | 0.50                 
 
 
 ## Contention
-It's one thing to measure primitive communication between two threads in an idle system. A better model for real-life behavior is when multiple threads try to access the same resource. This is measured with another test that spawns multiple threads which all try to increment a shared integer. The contenders are:
+It's one thing to measure primitive communication between two threads in an idle system. A better model for real-life behavior is when multiple threads try to access the same resource. This is measured with another test that creates multiple threads which all try to increment a shared integer. The contenders are:
 
 - A `std::mutex` being locked during increment
 - A `std::atomic_flag` being used as a signal for other threads to increment via `.notify_one()`
 - And as a bonus, a `std::atomic_int` being incremented directly via `.fetch_add(1)`
 
-With such a setup, a clear performance difference can now be observed with atomics suddenly outperforming a mutex:
+With such a setup, a clear performance difference can now be observed with atomics now outperforming a mutex much more clearly:
 
 ![contention_7700](https://user-images.githubusercontent.com/6044318/148349790-5a70d063-f48e-4436-ad14-cfe7f010ab9a.png)
 
@@ -95,7 +98,7 @@ The atomic `.fetch_add()` performs even better since it uses system intrinsics f
 ## Differences between hardware cores
 In some of the measurements above, you might have noticed a curious pleateau in the CDF for the Ryzen CPU. That direcly relates to a bimodal distrubution of observed latencies. The reason for this is actually pretty cool. The CPU in question (3800X) has 8 Cores / 16 threads. But it's built from two identical packages ("CCX") of [4 cores / 8 threads each](https://en.wikipedia.org/wiki/Zen_2#Design). There's a fast interconnect but it's not quite as fast as communication within a single CCX.
 
-To measure this effect, we can run another latency test and set the thread affinity explicitly to limit communication between two threads. Doing that for all combinations of the 16 threads makes for 256 combinations. We can then visualize the median latencies in a grid:
+To measure this effect, we can run another latency test and set the thread affinity explicitly to limit communication between two threads. Doing that for all combinations of the 16 threads results in 256 combinations. We can then visualize the median latencies in a grid:
 
 ![heatmap_ryzen](https://user-images.githubusercontent.com/6044318/148236028-d5783fdf-249c-4404-b0b6-c1668a4da0de.png)
 
@@ -107,6 +110,6 @@ There was another interesting phenomenom discovered during development of this t
 - Creating a thread is very costly compared to all other thread operations
 - Latencies for inter-thread communication via synchronization primitives is in the range of one or a few microseconds
 - Latency of a spinlock is about an order of magnitude faster
-- All synchroniation primitives exhibited nearly identical latency times in uncontended workload
+- All synchroniation primitives exhibited almost identical latency times in uncontended workload
 - Under contention, more specialized operations (atomics) performed better
 - If low latencies are *very* important, be mindful of your CPU architecture and topology
